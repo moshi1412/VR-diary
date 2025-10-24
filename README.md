@@ -49,3 +49,9 @@
 ## 项目进度
 
 10.23 实现串流调试 建立仓库
+10.24 提出初步构想
+> 全景场景搭建
+>
+> https://www.bilibili.com/video/BV1F4hzemEM5?spm_id_from=333.788.player.player_end_recommend_autoplay&vd_source=de85285ffc34d365d7e48317702d6f30&trackid=web_related_0.router-related-2206419-xc9bj.1761318290883.815
+>
+> 只要找到合适的VR全景图片就行
