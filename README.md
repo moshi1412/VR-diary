@@ -43,4 +43,9 @@
 >
 >注册开发者
 >
-> https://developers.meta.com/horizon/sign-up/ 
+> https://developers.meta.com/horizon/sign-up/
+
+
+## 项目进度
+
+10.23 实现串流调试 建立仓库
