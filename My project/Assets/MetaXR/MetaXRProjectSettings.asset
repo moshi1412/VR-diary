@@ -16,8 +16,12 @@ MonoBehaviour:
     keys:
     - Meta.XR.SDK.UsageSettings.UsesProjectSetupTool
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     - Meta.XR.SDK.UsageSettings.UsesBuildingBlocks
     values: 0101
+=======
+    values: 01
+>>>>>>> Stashed changes
 =======
     values: 01
 >>>>>>> Stashed changes

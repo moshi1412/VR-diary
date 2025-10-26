@@ -18,7 +18,11 @@ MonoBehaviour:
   handTrackingFrequency: 0
   handTrackingVersion: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   anchorSupport: 1
+=======
+  anchorSupport: 0
+>>>>>>> Stashed changes
 =======
   anchorSupport: 0
 >>>>>>> Stashed changes
@@ -31,7 +35,11 @@ MonoBehaviour:
   virtualKeyboardSupport: 0
   colocationSessionSupport: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   sceneSupport: 2
+=======
+  sceneSupport: 0
+>>>>>>> Stashed changes
 =======
   sceneSupport: 0
 >>>>>>> Stashed changes

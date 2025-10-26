@@ -1,8 +1,11 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &-8256166081080842302
 =======
+=======
+>>>>>>> Stashed changes
 --- !u!114 &-4490147072381981970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18,6 +21,9 @@ MonoBehaviour:
   m_LoaderManagerInstance: {fileID: 4745615873062927881}
   m_InitManagerOnStart: 1
 --- !u!114 &-4113100075725258935
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31,9 +37,15 @@ MonoBehaviour:
   m_Name: Android Settings
   m_EditorClassIdentifier: Unity.XR.Management::UnityEngine.XR.Management.XRGeneralSettings
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_LoaderManagerInstance: {fileID: -7540424336262267425}
   m_InitManagerOnStart: 1
 --- !u!114 &-7540424336262267425
+=======
+  m_LoaderManagerInstance: {fileID: -2491197990384398324}
+  m_InitManagerOnStart: 1
+--- !u!114 &-2491197990384398324
+>>>>>>> Stashed changes
 =======
   m_LoaderManagerInstance: {fileID: -2491197990384398324}
   m_InitManagerOnStart: 1
@@ -55,6 +67,7 @@ MonoBehaviour:
   m_AutomaticRunning: 0
   m_Loaders:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   - {fileID: 11400000, guid: 1e8d5c4af73f7ca4f8b03ed0e4809c47, type: 2}
 --- !u!114 &-1840557749982002291
 MonoBehaviour:
@@ -73,6 +86,9 @@ MonoBehaviour:
 =======
   - {fileID: 11400000, guid: fe84e7f020b02fc49aa374159b2687f0, type: 2}
 >>>>>>> Stashed changes
+=======
+  - {fileID: 11400000, guid: fe84e7f020b02fc49aa374159b2687f0, type: 2}
+>>>>>>> Stashed changes
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,9 +104,15 @@ MonoBehaviour:
   Keys: 0100000007000000
   Values:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   - {fileID: -1840557749982002291}
   - {fileID: -8256166081080842302}
 --- !u!114 &620236901951796225
+=======
+  - {fileID: -4490147072381981970}
+  - {fileID: -4113100075725258935}
+--- !u!114 &4745615873062927881
+>>>>>>> Stashed changes
 =======
   - {fileID: -4490147072381981970}
   - {fileID: -4113100075725258935}
@@ -112,7 +134,11 @@ MonoBehaviour:
   m_AutomaticRunning: 0
   m_Loaders:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   - {fileID: 11400000, guid: 1e8d5c4af73f7ca4f8b03ed0e4809c47, type: 2}
+=======
+  - {fileID: 11400000, guid: fe84e7f020b02fc49aa374159b2687f0, type: 2}
+>>>>>>> Stashed changes
 =======
   - {fileID: 11400000, guid: fe84e7f020b02fc49aa374159b2687f0, type: 2}
 >>>>>>> Stashed changes

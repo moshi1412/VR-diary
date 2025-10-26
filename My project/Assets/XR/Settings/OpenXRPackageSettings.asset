@@ -1,7 +1,11 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &-8446779861839314103
+=======
+--- !u!114 &-9081388523867679096
+>>>>>>> Stashed changes
 =======
 --- !u!114 &-9081388523867679096
 >>>>>>> Stashed changes
@@ -13,6 +17,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   m_Script: {fileID: 11500000, guid: f028123e2efe1d443875bc7609b4a98b, type: 3}
   m_Name: PalmPoseInteraction Standalone
@@ -27,6 +32,8 @@ MonoBehaviour:
   required: 0
 --- !u!114 &-8303933255571486961
 =======
+=======
+>>>>>>> Stashed changes
   m_Script: {fileID: 11500000, guid: b5a1f07dc5afe854f9f12a4194aca3fb, type: 3}
   m_Name: Android
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.OpenXRSettings
@@ -89,6 +96,9 @@ MonoBehaviour:
   priority: 0
   required: 0
 --- !u!114 &-8881469941610341746
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,6 +109,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_Script: {fileID: 11500000, guid: 274c02963f889a64e90bc2e596e21d13, type: 3}
   m_Name: HTCViveControllerProfile Standalone
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.Interactions.HTCViveControllerProfile
@@ -107,6 +118,8 @@ MonoBehaviour:
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.htcvive
 =======
+=======
+>>>>>>> Stashed changes
   m_Script: {fileID: 11500000, guid: 7de993716e042c6499d0c18eed3a773c, type: 3}
   m_Name: MockRuntime Android
   m_EditorClassIdentifier: Unity.XR.OpenXR.Features.MockRuntime::UnityEngine.XR.OpenXR.Features.Mock.MockRuntime
@@ -205,11 +218,15 @@ MonoBehaviour:
   nameUi: Valve Index Controller Profile
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.valveindex
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   openxrExtensionStrings: 
   company: Unity
   priority: 0
   required: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 --- !u!114 &-8272644945926207695
 MonoBehaviour:
@@ -255,6 +272,9 @@ MonoBehaviour:
 =======
 --- !u!114 &-5720165177790884548
 >>>>>>> Stashed changes
+=======
+--- !u!114 &-5720165177790884548
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -275,7 +295,11 @@ MonoBehaviour:
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &-7893269054887416537
+=======
+--- !u!114 &-5717732665763182888
+>>>>>>> Stashed changes
 =======
 --- !u!114 &-5717732665763182888
 >>>>>>> Stashed changes
@@ -287,6 +311,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   m_Script: {fileID: 11500000, guid: 9ef793c31862a37448e907829482ef80, type: 3}
   m_Name: OculusQuestFeature Android
@@ -303,6 +328,8 @@ MonoBehaviour:
   targetQuest2: 1
 --- !u!114 &-7693381180965763382
 =======
+=======
+>>>>>>> Stashed changes
   m_Script: {fileID: 11500000, guid: f928d0d73a35f294fbe357ca17aa3547, type: 3}
   m_Name: MicrosoftHandInteraction Standalone
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.Interactions.MicrosoftHandInteraction
@@ -410,6 +437,9 @@ MonoBehaviour:
   priority: 0
   required: 0
 --- !u!114 &-3815941963440918063
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,7 +488,11 @@ MonoBehaviour:
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &-7608128050396183837
+=======
+--- !u!114 &-3812962206104278750
+>>>>>>> Stashed changes
 =======
 --- !u!114 &-3812962206104278750
 >>>>>>> Stashed changes
@@ -472,7 +506,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f928d0d73a35f294fbe357ca17aa3547, type: 3}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_Name: MicrosoftHandInteraction Standalone
+=======
+  m_Name: MicrosoftHandInteraction Android
+>>>>>>> Stashed changes
 =======
   m_Name: MicrosoftHandInteraction Android
 >>>>>>> Stashed changes
@@ -486,8 +524,11 @@ MonoBehaviour:
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &-7025566272908510558
 =======
+=======
+>>>>>>> Stashed changes
 --- !u!114 &-3572505192353274466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -509,6 +550,9 @@ MonoBehaviour:
   priority: 0
   required: 0
 --- !u!114 &-3543600277803849183
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -529,6 +573,7 @@ MonoBehaviour:
   company: Unity
   priority: 0
   required: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 --- !u!114 &-6747400773818862815
 MonoBehaviour:
@@ -694,6 +739,9 @@ MonoBehaviour:
 =======
 --- !u!114 &-3390935947756470428
 >>>>>>> Stashed changes
+=======
+--- !u!114 &-3390935947756470428
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -715,6 +763,7 @@ MonoBehaviour:
   company: Unity
   priority: 0
   required: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 --- !u!114 &-1235594021957921661
 MonoBehaviour:
@@ -740,6 +789,9 @@ MonoBehaviour:
 =======
 --- !u!114 &-3251080371045273669
 >>>>>>> Stashed changes
+=======
+--- !u!114 &-3251080371045273669
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -760,8 +812,11 @@ MonoBehaviour:
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &-48132874664564650
 =======
+=======
+>>>>>>> Stashed changes
 --- !u!114 &-3244347805479271195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -803,6 +858,9 @@ MonoBehaviour:
   priority: 0
   required: 0
 --- !u!114 &-2909239666725932687
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -814,7 +872,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e573a2aed6698b047aff95224499b722, type: 3}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_Name: MetaXREyeTrackedFoveationFeature Android
+=======
+  m_Name: MetaXREyeTrackedFoveationFeature Standalone
+>>>>>>> Stashed changes
 =======
   m_Name: MetaXREyeTrackedFoveationFeature Standalone
 >>>>>>> Stashed changes
@@ -829,8 +891,11 @@ MonoBehaviour:
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &-9265379984181048
 =======
+=======
+>>>>>>> Stashed changes
 --- !u!114 &-2726047019480056258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -852,6 +917,9 @@ MonoBehaviour:
   priority: 0
   required: 0
 --- !u!114 &-2250888671752435771
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -873,7 +941,11 @@ MonoBehaviour:
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &11400000
+=======
+--- !u!114 &-2239886971289636208
+>>>>>>> Stashed changes
 =======
 --- !u!114 &-2239886971289636208
 >>>>>>> Stashed changes
@@ -885,6 +957,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   m_Script: {fileID: 11500000, guid: 9f0ebc320a151d3408ea1e9fce54d40e, type: 3}
   m_Name: OpenXRPackageSettings
@@ -916,6 +989,8 @@ MonoBehaviour:
   ignoreValidationErrors: 0
 --- !u!114 &1016750217625803144
 =======
+=======
+>>>>>>> Stashed changes
   m_Script: {fileID: 11500000, guid: 2b7365b139f7aec43b23d26b7a48b5a6, type: 3}
   m_Name: MetaQuestTouchPlusControllerProfile Android
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.Interactions.MetaQuestTouchPlusControllerProfile
@@ -928,6 +1003,9 @@ MonoBehaviour:
   priority: 0
   required: 0
 --- !u!114 &-2036652323924623830
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -976,7 +1054,11 @@ MonoBehaviour:
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &1312096252799888602
+=======
+--- !u!114 &-128350790947335334
+>>>>>>> Stashed changes
 =======
 --- !u!114 &-128350790947335334
 >>>>>>> Stashed changes
@@ -988,6 +1070,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   m_Script: {fileID: 11500000, guid: 3d28f705476c80d47acb3dfade3d3142, type: 3}
   m_Name: MetaXRFoveationFeature Standalone
@@ -1022,6 +1105,8 @@ MonoBehaviour:
   required: 0
 --- !u!114 &1469977360511515337
 =======
+=======
+>>>>>>> Stashed changes
   m_Script: {fileID: 11500000, guid: 2b7365b139f7aec43b23d26b7a48b5a6, type: 3}
   m_Name: MetaQuestTouchPlusControllerProfile Standalone
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.Interactions.MetaQuestTouchPlusControllerProfile
@@ -1050,6 +1135,9 @@ MonoBehaviour:
   - {fileID: -6377114080572778538}
   - {fileID: -9081388523867679096}
 --- !u!114 &211276811495686415
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1061,7 +1149,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7de993716e042c6499d0c18eed3a773c, type: 3}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_Name: MockRuntime Android
+=======
+  m_Name: MockRuntime Standalone
+>>>>>>> Stashed changes
 =======
   m_Name: MockRuntime Standalone
 >>>>>>> Stashed changes
@@ -1075,6 +1167,7 @@ MonoBehaviour:
   priority: 0
   required: 0
   ignoreValidationErrors: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 --- !u!114 &1563202050023597183
 MonoBehaviour:
@@ -1230,6 +1323,9 @@ MonoBehaviour:
 =======
 --- !u!114 &1466650906009360740
 >>>>>>> Stashed changes
+=======
+--- !u!114 &1466650906009360740
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1252,7 +1348,11 @@ MonoBehaviour:
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &2792537823088583596
+=======
+--- !u!114 &1678403648747660959
+>>>>>>> Stashed changes
 =======
 --- !u!114 &1678403648747660959
 >>>>>>> Stashed changes
@@ -1264,6 +1364,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   m_Script: {fileID: 11500000, guid: 056125dd64c0ed540b40a4af74f7b495, type: 3}
   m_Name: RuntimeDebuggerOpenXRFeature Android
@@ -1321,6 +1422,8 @@ MonoBehaviour:
   m_UseRightHandedNDC: 0
 --- !u!114 &5226162349343594913
 =======
+=======
+>>>>>>> Stashed changes
   m_Script: {fileID: 11500000, guid: b213d3e3c7f3109449eb46a4c8ee42f0, type: 3}
   m_Name: XrPerformanceSettingsFeature Standalone
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.Extensions.PerformanceSettings.XrPerformanceSettingsFeature
@@ -1333,6 +1436,9 @@ MonoBehaviour:
   priority: 0
   required: 0
 --- !u!114 &1803598116444792169
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1342,6 +1448,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   m_Script: {fileID: 11500000, guid: feeef8d85de8db242bdda70cc7ff5acd, type: 3}
   m_Name: OculusTouchControllerProfile Standalone
@@ -1371,6 +1478,8 @@ MonoBehaviour:
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.handinteraction
 =======
+=======
+>>>>>>> Stashed changes
   m_Script: {fileID: 11500000, guid: c4b862ee14fb479fbfe5fffe655d3ed3, type: 3}
   m_Name: MetaQuestTouchProControllerProfile Standalone
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.Interactions.MetaQuestTouchProControllerProfile
@@ -1418,13 +1527,20 @@ MonoBehaviour:
   nameUi: Hand Interaction Poses
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.handinteractionposes
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   openxrExtensionStrings: XR_EXT_hand_interaction
   company: Unity
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &7184381817695971765
+=======
+--- !u!114 &2277295564969248873
+>>>>>>> Stashed changes
 =======
 --- !u!114 &2277295564969248873
 >>>>>>> Stashed changes
@@ -1447,6 +1563,7 @@ MonoBehaviour:
   company: Unity
   priority: 0
   required: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 --- !u!114 &7198342583713907007
 MonoBehaviour:
@@ -1473,6 +1590,9 @@ MonoBehaviour:
 =======
 --- !u!114 &2385616569990602542
 >>>>>>> Stashed changes
+=======
+--- !u!114 &2385616569990602542
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1483,7 +1603,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c5b5af5107e35a43818d5411328bfc3, type: 3}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_Name: DPadInteraction Android
+=======
+  m_Name: DPadInteraction Standalone
+>>>>>>> Stashed changes
 =======
   m_Name: DPadInteraction Standalone
 >>>>>>> Stashed changes
@@ -1510,8 +1634,11 @@ MonoBehaviour:
   - XR_KHR_binding_modification
   - XR_EXT_dpad_binding
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &7521375562124724888
 =======
+=======
+>>>>>>> Stashed changes
 --- !u!114 &3290556717448445702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1676,6 +1803,9 @@ MonoBehaviour:
   priority: 0
   required: 0
 --- !u!114 &6026500420549083729
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1699,7 +1829,11 @@ MonoBehaviour:
   cacheSize: 1048576
   perThreadCacheSize: 51200
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &7532833634174425913
+=======
+--- !u!114 &6072054665241938316
+>>>>>>> Stashed changes
 =======
 --- !u!114 &6072054665241938316
 >>>>>>> Stashed changes
@@ -1723,8 +1857,11 @@ MonoBehaviour:
   priority: 0
   required: 0
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 --- !u!114 &8551820199584567274
 =======
+=======
+>>>>>>> Stashed changes
 --- !u!114 &6157143483044670206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1787,6 +1924,9 @@ MonoBehaviour:
   priority: 0
   required: 0
 --- !u!114 &9025057075416506076
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1800,7 +1940,11 @@ MonoBehaviour:
   m_Name: MetaQuestFeature Android
   m_EditorClassIdentifier: Unity.XR.OpenXR.Features.MetaQuestSupport::UnityEngine.XR.OpenXR.Features.MetaQuestSupport.MetaQuestFeature
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   m_enabled: 0
+=======
+  m_enabled: 1
+>>>>>>> Stashed changes
 =======
   m_enabled: 1
 >>>>>>> Stashed changes
@@ -1838,6 +1982,7 @@ MonoBehaviour:
   multiviewRenderRegionsOptimizationMode: 0
   m_hasMigratedMultiviewRenderRegions: 1
   spacewarpMotionVectorTextureFormat: 0
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 --- !u!114 &8719937185463963939
 MonoBehaviour:
@@ -1942,5 +2087,7 @@ MonoBehaviour:
   company: Meta
   priority: 0
   required: 0
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
