@@ -17,7 +17,11 @@ MonoBehaviour:
   handTrackingSupport: 0
   handTrackingFrequency: 0
   handTrackingVersion: 0
+<<<<<<< Updated upstream
   anchorSupport: 1
+=======
+  anchorSupport: 0
+>>>>>>> Stashed changes
   sharedAnchorSupport: 0
   renderModelSupport: 0
   trackedKeyboardSupport: 0
@@ -26,7 +30,11 @@ MonoBehaviour:
   eyeTrackingSupport: 0
   virtualKeyboardSupport: 0
   colocationSessionSupport: 0
+<<<<<<< Updated upstream
   sceneSupport: 2
+=======
+  sceneSupport: 0
+>>>>>>> Stashed changes
   boundaryVisibilitySupport: 0
   disableBackups: 1
   enableNSCConfig: 1
