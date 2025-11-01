@@ -56,3 +56,11 @@
 > https://www.bilibili.com/video/BV1F4hzemEM5?spm_id_from=333.788.player.player_end_recommend_autoplay&vd_source=de85285ffc34d365d7e48317702d6f30&trackid=web_related_0.router-related-2206419-xc9bj.1761318290883.815
 >
 > 只要找到合适的VR全景图片就行
+
+10.25 使用星空的全景图，直接把材质用在场景设置里的skybox上就行了
+
+10.27 查找免费模型的书架，放在场景中，但是现在虽然加了刚体组件，不会因为重力掉落，很奇怪的bug，但是OVRCameraRig也是这样，后面再修。
+
+11.1 实现控制器进行按钮的点击，实现录音功能，保存在电脑本地，具体路径需要查看unity console 里面的输出。
+
+上传了第一个版本，之后开一个branch做后面的版本
