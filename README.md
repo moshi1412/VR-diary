@@ -89,4 +89,7 @@
 >
 > 2. 现在datamanager脚本的逻辑是把记忆的数据存到本地（json）（使用内部JsonUtility库）
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
