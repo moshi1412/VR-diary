@@ -3,36 +3,41 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Android;
 using UnityEngine.iOS;
-using TMPro; // 引入TextMeshPro命名空间
+using TMPro;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(AudioSource))]
 public class TMP_ToggleAudioRecorder : MonoBehaviour
 {
     [Header("UI组件")]
-    public Toggle recordToggle;          // 控制录音的Toggle
-    public TextMeshProUGUI statusText;   // TextMeshPro状态文本（替换原生Text）
+    public Toggle recordToggle;          
+    public TextMeshProUGUI statusText;   
 
+    [Header("数据管理")]
+    public int targetMemoryId; // 录音关联的唯一记忆ID（需手动设置或通过其他逻辑获取）
+    private DataManager dataManager; 
     private AudioSource audioSource;
     private string microphoneDevice;
     private AudioClip recordedClip;
     private bool isRecording = false;
 
-    // 保存路径
     private string savePath => Path.Combine(Application.persistentDataPath, "Recordings");
 
 
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        recordToggle.isOn=false;
-        // 绑定Toggle事件
+        recordToggle.isOn = false;
         recordToggle.onValueChanged.AddListener(OnToggleValueChanged);
-
-        // 初始状态（TextMeshPro文本设置）
         statusText.text = "Save your memory";
 
-        // 请求麦克风权限
+        // 查找DataManager（通过标签）
+        dataManager = GameObject.FindWithTag("DataManager")?.GetComponent<DataManager>();
+        if (dataManager == null)
+        {
+            Debug.LogError("DataManager not found! Ensure it has tag 'DataManager'.");
+        }
+
         RequestMicrophonePermission();
     }
 
@@ -41,12 +46,12 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
     {
         if (isOn)
         {
-            Debug.Log("value changed ! Start_recording !");
-            StartRecording(); // 开启Toggle：开始录音
+            Debug.Log("Start recording !");
+            StartRecording();
         }
         else
         {
-            StopAndSaveRecording(); // 关闭Toggle：停止并保存
+            StopAndSaveRecording();
         }
     }
 
@@ -56,7 +61,6 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
 #if UNITY_ANDROID
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
         {
-
             Permission.RequestUserPermission(Permission.Microphone);
         }
 #elif UNITY_IOS
@@ -76,16 +80,14 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
         
         if (devices.Length == 0)
         {
-            statusText.text = "no micphone detected";
+            statusText.text = "No microphone detected";
             recordToggle.isOn = false;
             return;
         }
-        Debug.Log($"first available device:{devices[0]}");
+        
         microphoneDevice = devices[0];
         recordedClip = Microphone.Start(microphoneDevice, false, 600, 44100);
         isRecording = true;
-
-        // 更新TextMeshPro文本
         statusText.text = "Recording now...";
     }
 
@@ -96,7 +98,6 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
 
         Microphone.End(microphoneDevice);
         isRecording = false;
-
         SaveRecording();
     }
 
@@ -105,7 +106,7 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
     {
         if (recordedClip == null)
         {
-            statusText.text = "no data";
+            statusText.text = "No recording data";
             return;
         }
 
@@ -116,25 +117,68 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
                 Directory.CreateDirectory(savePath);
             }
 
+            // 生成唯一文件名（包含时间戳）
             string fileName = $"rec_{DateTime.Now:yyyyMMddHHmmss}.wav";
             string fullPath = Path.Combine(savePath, fileName);
 
+            // 保存WAV文件
             byte[] wavData = ConvertToWAV(recordedClip);
             File.WriteAllBytes(fullPath, wavData);
 
-            // TextMeshPro支持换行符，显示更清晰
-            statusText.text = $"already saved";
-            Debug.Log($"save path:{fullPath}");
+            // 保存路径到DataManager（适配新逻辑）
+            SavePathToDataManager(fullPath);
+
+            statusText.text = $"Saved:\n{fileName}";
+            Debug.Log($"Saved to: {fullPath}");
         }
         catch (Exception e)
         {
-            statusText.text = $"error for saving：\n{e.Message}";
-            Debug.LogError($"saving error：{e}");
+            statusText.text = $"Save failed:\n{e.Message}";
+            Debug.LogError($"Save error: {e}");
         }
     }
 
 
-    // 以下为WAV转换相关方法（与之前一致）
+    // 核心：将录音路径存入DataManager（适配新逻辑）
+    private void SavePathToDataManager(string recordingPath)
+    {
+        if (dataManager == null)
+        {
+            Debug.LogError("DataManager is null, cannot save path!");
+            return;
+        }
+
+        // 1. 先尝试获取该ID已有的数据（如果存在）
+        bool hasExistingData = dataManager.FetchDataById(targetMemoryId);
+        DataManager.MemoryData newData;
+
+        if (hasExistingData)
+        {
+            // 2. 若存在，更新录音路径（保留其他字段）
+            newData = dataManager.GetCurrentData();
+            newData.recordingpath = recordingPath;
+            newData.createTime = DateTime.Now.ToString(); // 更新时间戳
+        }
+        else
+        {
+            // 3. 若不存在，创建新数据（必须包含唯一memoryId）
+            newData = new DataManager.MemoryData()
+            {
+                memoryId = targetMemoryId, // 关键：指定唯一ID
+                recordingpath = recordingPath,
+                createTime = DateTime.Now.ToString(),
+                description = "Audio recording", // 默认描述（可扩展）
+                picturepath = "" // 留空，可后续补充
+            };
+        }
+
+        // 4. 保存数据（覆盖式存储，新DataManager会处理文件读写）
+        dataManager.AddData(newData);
+        Debug.Log($"Recording path saved to memory ID: {targetMemoryId}");
+    }
+
+
+    // WAV转换相关方法（保持不变）
     private byte[] ConvertToWAV(AudioClip clip)
     {
         float[] samples = new float[clip.samples * clip.channels];

@@ -3,7 +3,21 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - QDSUIToggleButton
+  - QDSUIIcon
+  - QDSUITextSecondaryColor
+  - QDSUISharedThemeColor
+  - QDSUIBorderlessButton
+  - QDSUIAccentColor
+  - QDSUISection
+  - QDSUISecondaryButton
+  - BallManager
+  - RealButton
+  - Ball
+  - ConsoleDetect
+  - PanelGroup
+  - DataManager
   layers:
   - Default
   - TransparentFX
