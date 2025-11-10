@@ -4,16 +4,20 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using UnityEngine.UI;  // 用于UI显示（新增）
-
+using TMPro; 
 public class VoiceInteractionManager : MonoBehaviour
 {
     [SerializeField] private string pythonScriptPath = "D://code//PythonProject//stt.py";
-    [SerializeField] private Text recognizedTextUI;  // 显示识别文本的UI组件
-    [SerializeField] private Text deepseekResultUI;  // 显示大模型结果的UI组件
+    [SerializeField] private TMP_Text recognizedTextUI;  // 显示识别文本的UI组件
+    [SerializeField] public TMP_Text deepseekResultUI;  // 显示大模型结果的UI组件
     private string streamingAssetsPath => Application.streamingAssetsPath;
-
+    public string localAudioPath;
+    private void Start()
+    {
+        localAudioPath="C:\\Users\\MISAK\\Documents\\录音\\录音.m4a";
+    }
     // 核心方法：本地音频转文字 + 大模型处理
-    public void ConvertLocalAudioToText(string localAudioPath)
+    public void ConvertLocalAudioToText()
     {
         if (!File.Exists(localAudioPath))
         {
@@ -99,7 +103,7 @@ public class VoiceInteractionManager : MonoBehaviour
     public void TestLocalAudioConversion()
     {
         string testAudioPath = Path.Combine(streamingAssetsPath, "local_rec.wav");
-        ConvertLocalAudioToText(testAudioPath);
+        ConvertLocalAudioToText();
     }
 }
 

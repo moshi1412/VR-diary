@@ -8,16 +8,15 @@ public class SearchButton : MonoBehaviour
         UIpanelgroup=GameObject.FindWithTag("PanelGroup").GetComponent<Animator>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void MainPanelMoveout()
     {
         if (other.CompareTag("Ball"))
         {
             UIpanelgroup.SetBool("searchin",false);
             UIpanelgroup.SetBool("searchout",true);
-
         }
     }
-    private void OnTriggerExit(Collider other)
+    public void MainPanelMovein()
     {
         if (other.CompareTag("Ball"))
             UIpanelgroup.SetBool("searchout",false);

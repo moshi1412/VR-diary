@@ -9,11 +9,16 @@ public class RealButton : MonoBehaviour
     {
         ballmanager=GameObject.FindWithTag("BallManager");
         balloperation=ballmanager.GetComponent<BallOperation>();
+        
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void PressedDownAdd()
     {
         Debug.Log("the player has pressed the button");
         balloperation.BallGenerate();
+        //Debug
+        GameObject voiceManager=GameObject.Find("VoiceInteractionManager");
+        VoiceInteractionManager vm=voiceManager.GetComponent<VoiceInteractionManager>();
+        vm.ConvertLocalAudioToText();
     } 
 }
