@@ -15,10 +15,11 @@ GameObject:
   - component: {fileID: 2938436440021545084}
   - component: {fileID: 2805532560081250780}
   - component: {fileID: 5933844604466861533}
-  - component: {fileID: 5019779285300442697}
+  - component: {fileID: 929753877602293544}
+  - component: {fileID: -4806959982795155707}
   m_Layer: 0
   m_Name: ball
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -32,7 +33,7 @@ Transform:
   m_GameObject: {fileID: 868621841027356931}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.289, y: -18.612, z: 27.656}
+  m_LocalPosition: {x: 15.74, y: -10.04, z: 20.87}
   m_LocalScale: {x: 0.3959244, y: 0.3959244, z: 0.3959244}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -52,7 +53,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: 7358e191-33b7-43ca-b066-b2f00531ac66
-  instanceId: e1624b27-43c3-4f20-8d6a-4752e8c81549
+  instanceId: 83cb6ad0-fdba-48c6-a670-84721412ac71
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: 
@@ -90,7 +91,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 15b1d5ff3d274694e8d0c6cb466a4ae6, type: 2}
+  - {fileID: 2100000, guid: 184d2152bed624246b9340bbea16be70, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -121,7 +122,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 868621841027356931}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 100
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -169,7 +170,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 868621841027356931}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: ca33756f8817ec948b1fc2d984cb78ec, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -183,7 +184,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.49999997
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5019779285300442697
+--- !u!114 &929753877602293544
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,14 +193,73 @@ MonoBehaviour:
   m_GameObject: {fileID: 868621841027356931}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35d15ed7859f43c42b0562f4f44f34c3, type: 3}
+  m_Script: {fileID: 11500000, guid: e23f450d11c17eb4aace2a6ebda19a31, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataManager
-  data:
-    memoryId: 0
-    description: 
-    createTime: 
-    historyPositions: []
+  m_EditorClassIdentifier: Assembly-CSharp::MagLevHover
+  baseTransform: {fileID: 0}
+  autoFindBase: 1
+  baseSearchInterval: 0.5
+  hoverHeight: 1.2
+  kP: 200
+  kD: 30
+  maxUpForce: 1500
+  kLat: 60
+  kLatD: 8
+  maxLatForce: 1000
+  alignTorque: 10
+  angularDamping: 1.5
+  useForceRegion: 1
+  regionRadius: 0.5
+  regionHeightMin: 0
+  regionHeightMax: 2.5
+  edgeSmooth: 0.11
+  glowColor: {r: 0, g: 1, b: 1, a: 1}
+  glowOnIntensity: 5
+  glowOffIntensity: 0
+  glowThreshold: 0.05
+  glowLerpSpeed: 8
+  autoReactivate: 1
+  reactivateDelay: 0.5
+  gizmoRadius: 0.15
+  drawRegion: 1
+--- !u!114 &-4806959982795155707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 868621841027356931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e23f450d11c17eb4aace2a6ebda19a31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MagLevHover
+  baseTransform: {fileID: 0}
+  autoFindBase: 1
+  baseSearchInterval: 0.5
+  hoverHeight: 1
+  kP: 200
+  kD: 30
+  maxUpForce: 1500
+  kLat: 60
+  kLatD: 8
+  maxLatForce: 1000
+  alignTorque: 10
+  angularDamping: 1.5
+  useForceRegion: 1
+  regionRadius: 1.2
+  regionHeightMin: 0
+  regionHeightMax: 2.5
+  edgeSmooth: 0.3
+  glowColor: {r: 0, g: 1, b: 1, a: 1}
+  glowOnIntensity: 5
+  glowOffIntensity: 0
+  glowThreshold: 0.05
+  glowLerpSpeed: 8
+  autoReactivate: 1
+  reactivateDelay: 0.5
+  gizmoRadius: 0.15
+  drawRegion: 1
 --- !u!1 &7490226173431309147
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,7 +307,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: f8766c17-aaf8-4b55-9431-de8deea83842
-  instanceId: 6bced9ab-4f07-4db1-ab9c-d7ea926c7b68
+  instanceId: 6c23380f-efcd-4077-b498-42a5bf1430e7
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: f8338144-8280-4ff6-9455-ae2bb9c20fe8
