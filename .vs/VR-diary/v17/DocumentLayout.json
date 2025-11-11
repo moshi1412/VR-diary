@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\12504\\Desktop\\VR\\VR-diary\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{12F0EBDB-A2AD-1E2F-5916-36552B389806}|Assembly-CSharp.csproj|c:\\users\\12504\\desktop\\vr\\vr-diary\\assets\\script\\maglevhover.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12F0EBDB-A2AD-1E2F-5916-36552B389806}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\maglevhover.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MagLevHover.cs",
+              "DocumentMoniker": "C:\\Users\\12504\\Desktop\\VR\\VR-diary\\Assets\\script\\MagLevHover.cs",
+              "RelativeDocumentMoniker": "Assets\\script\\MagLevHover.cs",
+              "ToolTip": "C:\\Users\\12504\\Desktop\\VR\\VR-diary\\Assets\\script\\MagLevHover.cs",
+              "RelativeToolTip": "Assets\\script\\MagLevHover.cs",
+              "ViewState": "AgIAAOIAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-11T14:55:56.885Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
