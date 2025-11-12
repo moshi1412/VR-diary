@@ -10,8 +10,8 @@ public class BallOperation : MonoBehaviour
     public bool triggerOnce = true;
     // 标记是否已触发
     public bool hasTriggered = false;
-    public bool BallReachButtom=false;
-
+    //public bool BallReachButtom=false;
+    public int ballnum;
     private void Start()
     {
             spawnPosition=prefabToSpawn.transform;
@@ -27,18 +27,12 @@ public class BallOperation : MonoBehaviour
         hasTriggered = true;
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void GenerateMultipleBalls()
     {
-       BallReachButtom=true;
-    }
-    private void OnTriggerExit(Collider other)
-    {
-       BallReachButtom=false;
-       hasTriggered=false;
-    }
-    public void BallDelete()
-    {
-        
+        for (int i = 0; i < ballnum; i++)
+        {
+            Invoke("CallFunctionAfterDelay", 1f);
+        }
     }
     
 }

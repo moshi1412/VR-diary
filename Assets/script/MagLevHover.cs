@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+
 
 [RequireComponent(typeof(Rigidbody))]
 public class MagLevHover : MonoBehaviour
@@ -48,6 +51,26 @@ public class MagLevHover : MonoBehaviour
     public float gizmoRadius = 0.15f;
     public bool drawRegion = true;
 
+    [Header("Launch Sequence (Button)")]
+    public bool allowButtonSequence = true;
+    public float prepHeightOffset = -0.5f;  // how much below hoverHeight to sink (negative)
+    public float prepDuration = 1.0f;       // time to ease into prep state
+    public float prepKPMult = 0.4f;         // vertical kP multiplier during prep (softer)
+    public float prepKDMult = 0.6f;         // vertical kD multiplier during prep
+    public float prepKLatMult = 1.5f;       // stronger lateral recentering in prep
+    public float centerPosThreshold = 0.05f; // meters, lateral radius to consider “centered”
+    public float centerHeightThreshold = 0.05f; // meters, height error threshold
+    public float centerSpeedThreshold = 0.2f;   // m/s, low speed threshold
+    public float centerTimeout = 3.0f;          // seconds, safety timeout
+
+    public float launchImpulse = 6f;       // upward velocity change (mass-independent)
+    public float launchBoostKPMult = 2.0f; // temporarily boost kP during launch
+    public float launchBoostKDMult = 1.5f; // temporarily boost kD during launch
+    public float launchBoostTime = 0.5f;   // seconds to keep boosted gains
+
+    Coroutine _sequenceRoutine;
+
+
     // Internals
     private Rigidbody rb;
     private Renderer _renderer;
@@ -55,7 +78,7 @@ public class MagLevHover : MonoBehaviour
     private float _currentGlow = 0f;
     private bool hoverActive = true;         // ��ǰ�����Ƿ���Ч
     private float nextReactivateCheck = 0f;  // �´μ��ʱ��
-
+    
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -258,4 +281,83 @@ public class MagLevHover : MonoBehaviour
         }
     }
 #endif
+    public void TriggerLaunchSequence()
+    {
+        if (!allowButtonSequence) return;
+        if (_sequenceRoutine != null) StopCoroutine(_sequenceRoutine);
+        _sequenceRoutine = StartCoroutine(DoLaunchSequence());
+    }
+
+    IEnumerator DoLaunchSequence()
+    {
+        if (baseTransform == null) yield break;
+
+        // Cache original parameters
+        float oHoverHeight = hoverHeight;
+        float oKP = kP, oKD = kD, oKLat = kLat, oKLatD = kLatD;
+
+        // --- Phase A: prep (sink + recenter softly) ---
+        float targetLow = oHoverHeight + prepHeightOffset; // lower than normal
+        float t0 = Time.time;
+        while (Time.time - t0 < prepDuration)
+        {
+            float t = (Time.time - t0) / prepDuration;
+            // Ease from original to prep values (smoothstep)
+            float s = t * t * (3f - 2f * t);
+
+            hoverHeight = Mathf.Lerp(oHoverHeight, targetLow, s);
+            kP = Mathf.Lerp(oKP, oKP * prepKPMult, s);
+            kD = Mathf.Lerp(oKD, oKD * prepKDMult, s);
+            kLat = Mathf.Lerp(oKLat, oKLat * prepKLatMult, s);
+            kLatD = Mathf.Lerp(oKLatD, Mathf.Max(oKLatD, oKLatD * 1.2f), s);
+
+            yield return new WaitForFixedUpdate();
+        }
+
+        // --- Phase B: wait until centered & calm (or timeout) ---
+        float waitStart = Time.time;
+        while (true)
+        {
+            if (baseTransform == null) break;
+
+            Vector3 n = baseTransform.up.normalized;
+            Vector3 toBall = transform.position - baseTransform.position;
+            float height = Vector3.Dot(toBall, n);
+            Vector3 lateral = Vector3.ProjectOnPlane(toBall, n);
+            float radial = lateral.magnitude;
+
+            float vVert = Vector3.Dot(rb.linearVelocity, n);
+            float vLat = Vector3.ProjectOnPlane(rb.linearVelocity, n).magnitude;
+
+            bool centered = (radial <= centerPosThreshold)
+                            && (Mathf.Abs((targetLow) - height) <= centerHeightThreshold)
+                            && (Mathf.Abs(vVert) <= centerSpeedThreshold)
+                            && (vLat <= centerSpeedThreshold);
+
+            if (centered) break;
+            if (Time.time - waitStart > centerTimeout) break; // safety exit
+
+            yield return new WaitForFixedUpdate();
+        }
+
+        // --- Phase C: launch up (impulse + temporary stronger vertical control) ---
+        Vector3 up = baseTransform.up.normalized;
+        rb.AddForce(up * launchImpulse, ForceMode.VelocityChange);
+
+        kP = oKP * launchBoostKPMult;
+        kD = oKD * launchBoostKDMult;
+        hoverHeight = oHoverHeight;
+
+        yield return new WaitForSeconds(launchBoostTime);
+
+        // --- Restore ---
+        hoverHeight = oHoverHeight;
+        kP = oKP;
+        kD = oKD;
+        kLat = oKLat;
+        kLatD = oKLatD;
+
+        _sequenceRoutine = null;
+    }
+
 }

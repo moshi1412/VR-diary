@@ -16,6 +16,7 @@ public class PlayRecord : MonoBehaviour
     private AudioSource audioSource;
     private string targetRecordingPath; // 目标录音路径
     private bool isAudioLoaded = false; // 音频是否已加载完成
+    private bool isProcessing = false;  // 防止重复处理的标志
 
     // 状态文本配置（可在Inspector修改）
     [SerializeField] private string defaultText = "Play Recording";
@@ -34,7 +35,7 @@ public class PlayRecord : MonoBehaviour
         }
 
         // 查找DataManager
-        dataManager = GameObject.FindWithTag("DataManager").GetComponent<DataManager>();
+        dataManager = GameObject.FindWithTag("DataManager")?.GetComponent<DataManager>();
         if (dataManager == null)
         {
             Debug.LogError("DataManager not found! Check tag 'DataManager'");
@@ -45,15 +46,38 @@ public class PlayRecord : MonoBehaviour
         // 初始化UI
         statusText.text = defaultText;
         playToggle.isOn = false;
-        playToggle.interactable = false; // 初始禁用，加载数据后启用
         playToggle.onValueChanged.AddListener(OnPlayToggleChanged);
-
-        // 预加载录音路径（不自动播放）
-        FetchRecordingPath();
     }
 
-    // 从DataManager获取录音路径
-    private void FetchRecordingPath()
+    // Toggle状态改变时触发
+    private void OnPlayToggleChanged(bool isOn)
+    {
+        // 防止重复处理或DataManager未找到时的操作
+        if (dataManager == null || isProcessing)
+        {
+            playToggle.isOn = false;
+            return;
+        }
+
+        if (isOn)
+        {
+            // 勾选Toggle：开始查找路径并播放
+            isProcessing = true;
+            playToggle.interactable = false;
+            statusText.text = loadingText;
+            
+            // 从DataManager获取录音路径并播放
+            FetchRecordingPathAndPlay();
+        }
+        else
+        {
+            // 取消勾选：停止播放
+            StopAudio();
+        }
+    }
+
+    // 从DataManager获取录音路径并播放
+    private void FetchRecordingPathAndPlay()
     {
         if (dataManager.FetchDataById(targetMemoryId))
         {
@@ -61,51 +85,16 @@ public class PlayRecord : MonoBehaviour
             if (!string.IsNullOrEmpty(memoryData.recordingpath) && File.Exists(memoryData.recordingpath))
             {
                 targetRecordingPath = memoryData.recordingpath;
-                statusText.text = defaultText;
-                playToggle.interactable = true; // 路径有效，启用Toggle
-            }
-            else
-            {
-                statusText.text = errorText;
-                Debug.LogError("Invalid recording path: " + memoryData.recordingpath);
-            }
-        }
-        else
-        {
-            statusText.text = errorText;
-            Debug.LogWarning("No data found for memory ID: " + targetMemoryId);
-        }
-    }
-
-    // Toggle状态改变时触发
-    private void OnPlayToggleChanged(bool isOn)
-    {
-        if (string.IsNullOrEmpty(targetRecordingPath))
-        {
-            statusText.text = errorText;
-            playToggle.isOn = false;
-            return;
-        }
-
-        if (isOn)
-        {
-            // 勾选Toggle：播放录音
-            if (isAudioLoaded)
-            {
-                PlayAudio();
-            }
-            else
-            {
-                // 音频未加载，先加载再播放
-                statusText.text = loadingText;
-                playToggle.interactable = false;
                 StartCoroutine(LoadAndPlayAudio(targetRecordingPath));
             }
+            else
+            {
+                HandleErrorState("Invalid recording path: " + memoryData.recordingpath);
+            }
         }
         else
         {
-            // 取消勾选：停止播放
-            StopAudio();
+            HandleErrorState("No data found for memory ID: " + targetMemoryId);
         }
     }
 
@@ -125,11 +114,10 @@ public class PlayRecord : MonoBehaviour
             }
             else
             {
-                statusText.text = errorText;
-                playToggle.isOn = false;
-                playToggle.interactable = true;
-                Debug.LogError("Failed to load audio: " + www.error);
+                HandleErrorState("Failed to load audio: " + www.error);
             }
+
+            isProcessing = false;
         }
     }
 
@@ -149,6 +137,16 @@ public class PlayRecord : MonoBehaviour
     {
         audioSource.Stop();
         statusText.text = pausedText;
+    }
+
+    // 处理错误状态
+    private void HandleErrorState(string errorLog)
+    {
+        statusText.text = errorText;
+        playToggle.isOn = false;
+        playToggle.interactable = true;
+        isProcessing = false;
+        Debug.LogError(errorLog);
     }
 
     // 禁用UI（DataManager未找到时）

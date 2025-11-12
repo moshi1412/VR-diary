@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: 7358e191-33b7-43ca-b066-b2f00531ac66
-  instanceId: a5bc674b-f1b3-4878-9e50-573df89647ca
+  instanceId: d8bef1c6-cdf7-4b5f-8962-dd0082872e86
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: 
@@ -221,6 +221,20 @@ MonoBehaviour:
   reactivateDelay: 0.5
   gizmoRadius: 0.15
   drawRegion: 1
+  allowButtonSequence: 0
+  prepHeightOffset: -0.5
+  prepDuration: 1
+  prepKPMult: 0.4
+  prepKDMult: 0.6
+  prepKLatMult: 1.5
+  centerPosThreshold: 0.05
+  centerHeightThreshold: 0.05
+  centerSpeedThreshold: 0.2
+  centerTimeout: 3
+  launchImpulse: 100
+  launchBoostKPMult: 2
+  launchBoostKDMult: 1.5
+  launchBoostTime: 0.5
 --- !u!1 &7490226173431309147
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,7 +282,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: f8766c17-aaf8-4b55-9431-de8deea83842
-  instanceId: b3bb2eff-6f66-421d-9725-a9b0bce786f7
+  instanceId: ff7a9f6d-e263-495e-81d4-9211b1894c94
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: f8338144-8280-4ff6-9455-ae2bb9c20fe8
