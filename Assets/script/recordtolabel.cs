@@ -1,148 +1,356 @@
-using UnityEngine;
 using System;
-using System.Diagnostics;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using UnityEngine.UI;  // 用于UI显示（新增）
-using TMPro; 
-public class VoiceInteractionManager : MonoBehaviour
+using UnityEngine;
+using UnityEngine.Networking;
+
+public class AudioAnalyzer : MonoBehaviour
 {
-    [SerializeField] private string pythonScriptPath = "D://code//PythonProject//stt.py";
-    [SerializeField] private TMP_Text recognizedTextUI;  // 显示识别文本的UI组件
-    [SerializeField] public TMP_Text deepseekResultUI;  // 显示大模型结果的UI组件
-    private string streamingAssetsPath => Application.streamingAssetsPath;
-    public string localAudioPath;
-    private void Start()
+    // 硅基流动API配置
+    [Header("硅基流动API配置")]
+    public string siliconFlowApiKey = "";
+
+    // 百度智能云API配置
+    [Header("百度智能云API配置")]
+    public string baiduApiKey = "";
+    public string baiduSecretKey = "";
+
+    // 音频文件路径（外部传入）
+    [Header("文件路径")]
+    public string audioFilePath = "";
+
+    // 分析结果回调（包含情绪结果和标签字符串）
+    private Action<string, string, string> onAnalysisCompleted; // 参数：情绪结果、关键词、合并标签
+
+    /// <summary>
+    /// 外部调用此方法开始处理音频并获取结果
+    /// </summary>
+    /// <param name="onCompleted">回调函数：(情绪结果, 关键词字符串, 合并标签字符串)</param>
+    public void ProcessAudioAndGetResults(Action<string, string, string> onCompleted)
     {
-        localAudioPath="C:\\Users\\MISAK\\Documents\\录音\\录音.m4a";
-    }
-    // 核心方法：本地音频转文字 + 大模型处理
-    public void ConvertLocalAudioToText()
-    {
-        if (!File.Exists(localAudioPath))
+        onAnalysisCompleted = onCompleted;
+
+        // 参数校验
+        if (string.IsNullOrEmpty(siliconFlowApiKey))
         {
-            UnityEngine.Debug.LogError($"本地文件不存在：{localAudioPath}");
-            UpdateUI("文件不存在", "");
+            InvokeCallback("错误：请设置硅基流动API密钥", "", "");
             return;
         }
-        UnityEngine.Debug.Log($"处理本地文件：{localAudioPath}");
-        CallPythonScriptWithPath(localAudioPath);
+
+        if (string.IsNullOrEmpty(baiduApiKey) || string.IsNullOrEmpty(baiduSecretKey))
+        {
+            InvokeCallback("错误：请设置百度智能云API密钥和Secret Key", "", "");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(audioFilePath) || !File.Exists(audioFilePath))
+        {
+            InvokeCallback($"错误：音频文件不存在 → {audioFilePath}", "", "");
+            return;
+        }
+
+        StartCoroutine(ProcessAudioCoroutine());
     }
 
-    // 调用Python并传递文件路径
-    private void CallPythonScriptWithPath(string audioPath)
+    /// <summary>
+    /// 处理音频的协程
+    /// </summary>
+    private IEnumerator ProcessAudioCoroutine()
     {
-        ProcessStartInfo startInfo = new ProcessStartInfo
-        {
-            FileName = "python",  // 路径不正确则替换为完整Python路径
-            Arguments = $"{pythonScriptPath} \"{audioPath}\"",
-            WorkingDirectory = Application.dataPath + "/../",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            StandardOutputEncoding = Encoding.UTF8
-        };
+        // 1. 音频转文字
+        string recognizedText = null;
+        yield return StartCoroutine(AudioToText(audioFilePath, siliconFlowApiKey, (result) => recognizedText = result));
 
-        Process process = new Process { StartInfo = startInfo };
-        process.OutputDataReceived += OnPythonOutput;
-        process.ErrorDataReceived += OnPythonError;
-        process.Start();
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
-        process.WaitForExit();
-        process.Close();
+        if (string.IsNullOrEmpty(recognizedText))
+        {
+            InvokeCallback("识别失败", "", "[UNITY_RESULT]|识别失败|无");
+            yield break;
+        }
+
+        Debug.Log($"[UNITY_RESULT]|{recognizedText}|无");
+
+        // 2. 文本分析
+        AnalysisResult analysisResult = null;
+        yield return StartCoroutine(AnalyzeText(recognizedText, baiduApiKey, baiduSecretKey, (result) => analysisResult = result));
+
+        // 3. 生成结果并返回
+        if (analysisResult != null)
+        {
+            string sentimentResult = string.Join("、", analysisResult.sentimentTags);
+            string keywords = string.Join("、", analysisResult.keywordTags);
+            string combinedTags = GenerateCombinedTags(sentimentResult, keywords);
+            
+            InvokeCallback(sentimentResult, keywords, combinedTags);
+        }
+        else
+        {
+            InvokeCallback("文本分析失败", "", "文本分析失败，无法生成标签");
+        }
     }
 
-    // 解析Python输出（包含识别文本和大模型结果）
-    private void OnPythonOutput(object sender, DataReceivedEventArgs e)
+    /// <summary>
+    /// 生成合并的标签字符串
+    /// </summary>
+    private string GenerateCombinedTags(string sentiment, string keywords)
     {
-        if (string.IsNullOrEmpty(e.Data)) return;
-        UnityEngine.Debug.Log($"[Python输出] {e.Data}");
+        return $"情绪标签：{sentiment} | 关键词标签：{keywords}";
+    }
 
-        if (e.Data.StartsWith("[UNITY_RESULT]"))
+    /// <summary>
+    /// 调用回调函数
+    /// </summary>
+    private void InvokeCallback(string sentiment, string keywords, string combined)
+    {
+        onAnalysisCompleted?.Invoke(sentiment, keywords, combined);
+        onAnalysisCompleted = null; // 清空回调避免重复调用
+    }
+
+    /// <summary>
+    /// 音频转文字（硅基流动API）
+    /// </summary>
+    private IEnumerator AudioToText(string audioPath, string apiKey, Action<string> onComplete)
+    {
+        string url = "https://api.siliconflow.cn/v1/audio/transcriptions";
+
+        WWWForm form = new WWWForm();
+        form.AddField("model", "FunAudioLLM/SenseVoiceSmall");
+
+        byte[] audioData;
+        try
         {
-            string[] parts = e.Data.Split('|');
-            if (parts.Length >= 3)
+            audioData = File.ReadAllBytes(audioPath);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"读取音频文件失败：{e.Message}");
+            onComplete?.Invoke(null);
+            yield break;
+        }
+
+        form.AddBinaryData("file", audioData, Path.GetFileName(audioPath));
+
+        UnityWebRequest request = UnityWebRequest.Post(url, form);
+        request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+
+        Debug.Log($"开始识别音频：{audioPath}");
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            try
             {
-                string recognizedText = parts[1];
-                string deepseekResult = parts[2];
-                UnityEngine.Debug.Log($"识别结果：{recognizedText}\n大模型处理结果：{deepseekResult}");
-                // 更新UI显示（需在主线程执行）
-                UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                {
-                    UpdateUI(recognizedText, deepseekResult);
-                });
+                var responseJson = JsonUtility.FromJson<SiliconFlowResponse>(request.downloadHandler.text);
+                onComplete?.Invoke(responseJson.text);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"解析响应失败：{e.Message}");
+                onComplete?.Invoke(null);
             }
         }
-    }
-
-    // 更新UI文本
-    private void UpdateUI(string recognizedText, string deepseekResult)
-    {
-        if (recognizedTextUI != null)
-            recognizedTextUI.text = $"识别文本：{recognizedText}";
-        if (deepseekResultUI != null)
-            deepseekResultUI.text = $"关键信息标签：{deepseekResult}";
-    }
-
-    // 错误处理
-    private void OnPythonError(object sender, DataReceivedEventArgs e)
-    {
-        if (!string.IsNullOrEmpty(e.Data))
+        else
         {
-            UnityEngine.Debug.LogError($"[Python错误] {e.Data}");
-            UnityMainThreadDispatcher.Instance().Enqueue(() =>
-            {
-                UpdateUI("识别失败", e.Data);
-            });
+            Debug.LogError($"识别失败：{request.error}");
+            onComplete?.Invoke(null);
         }
+
+        request.Dispose();
     }
 
-    // 测试按钮调用
-    public void TestLocalAudioConversion()
+    /// <summary>
+    /// 文本分析（百度API）
+    /// </summary>
+    private IEnumerator AnalyzeText(string text, string apiKey, string secretKey, Action<AnalysisResult> onComplete)
     {
-        string testAudioPath = Path.Combine(streamingAssetsPath, "local_rec.wav");
-        ConvertLocalAudioToText();
-    }
-}
-
-// 辅助类：解决Unity多线程更新UI问题（直接复制到脚本中）
-public class UnityMainThreadDispatcher : MonoBehaviour
-{
-    private static UnityMainThreadDispatcher instance;
-    private System.Collections.Generic.Queue<Action> actions = new System.Collections.Generic.Queue<Action>();
-
-    public static UnityMainThreadDispatcher Instance()
-    {
-        if (instance == null)
+        if (string.IsNullOrEmpty(text))
         {
-            instance = FindObjectOfType<UnityMainThreadDispatcher>();
-            if (instance == null)
+            onComplete?.Invoke(null);
+            yield break;
+        }
+
+        // 获取访问令牌
+        string accessToken = null;
+        yield return StartCoroutine(GetBaiduAccessToken(apiKey, secretKey, (token) => accessToken = token));
+
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            onComplete?.Invoke(null);
+            yield break;
+        }
+
+        // 情绪分析
+        SentimentResult sentimentResult = null;
+        yield return StartCoroutine(AnalyzeSentiment(text, accessToken, (result) => sentimentResult = result));
+
+        // 关键词提取
+        KeywordResult keywordResult = null;
+        yield return StartCoroutine(ExtractKeywords(text, accessToken, (result) => keywordResult = result));
+
+        // 整理结果
+        AnalysisResult result = new AnalysisResult();
+        
+        if (sentimentResult != null && sentimentResult.items != null && sentimentResult.items.Length > 0)
+        {
+            int sentiment = sentimentResult.items[0].sentiment;
+            string[] sentimentLabels = { "负面", "中性", "正面" };
+            if (sentiment >= 0 && sentiment < sentimentLabels.Length)
             {
-                GameObject obj = new GameObject("UnityMainThreadDispatcher");
-                instance = obj.AddComponent<UnityMainThreadDispatcher>();
+                result.sentimentTags.Add(sentimentLabels[sentiment]);
             }
         }
-        return instance;
-    }
 
-    private void Update()
-    {
-        lock (actions)
+        if (keywordResult != null && keywordResult.items != null)
         {
-            while (actions.Count > 0)
+            foreach (var item in keywordResult.items)
             {
-                actions.Dequeue().Invoke();
+                result.keywordTags.Add(item.tag);
             }
         }
+
+        onComplete?.Invoke(result);
     }
 
-    public void Enqueue(Action action)
+    /// <summary>
+    /// 获取百度API访问令牌
+    /// </summary>
+    private IEnumerator GetBaiduAccessToken(string apiKey, string secretKey, Action<string> onComplete)
     {
-        lock (actions)
+        string url = $"https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id={apiKey}&client_secret={secretKey}";
+
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
         {
-            actions.Enqueue(action);
+            try
+            {
+                var response = JsonUtility.FromJson<BaiduTokenResponse>(request.downloadHandler.text);
+                onComplete?.Invoke(response.access_token);
+            }
+            catch
+            {
+                onComplete?.Invoke(null);
+            }
         }
+        else
+        {
+            onComplete?.Invoke(null);
+        }
+
+        request.Dispose();
+    }
+
+    /// <summary>
+    /// 情绪分析
+    /// </summary>
+    private IEnumerator AnalyzeSentiment(string text, string accessToken, Action<SentimentResult> onComplete)
+    {
+        string url = $"https://aip.baidubce.com/rpc/2.0/nlp/v1/sentiment_classify?access_token={accessToken}";
+
+        string limitedText = text.Length > 2000 ? text.Substring(0, 2000) : text;
+        var data = new SentimentRequestData { text = limitedText };
+        string jsonData = JsonUtility.ToJson(data);
+
+        UnityWebRequest request = UnityWebRequest.PostWwwForm(url, "POST");
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                var result = JsonUtility.FromJson<SentimentResult>(request.downloadHandler.text);
+                onComplete?.Invoke(result);
+            }
+            catch
+            {
+                onComplete?.Invoke(null);
+            }
+        }
+        else
+        {
+            onComplete?.Invoke(null);
+        }
+
+        request.Dispose();
+    }
+
+    /// <summary>
+    /// 提取关键词
+    /// </summary>
+    private IEnumerator ExtractKeywords(string text, string accessToken, Action<KeywordResult> onComplete)
+    {
+        string url = $"https://aip.baidubce.com/rpc/2.0/nlp/v1/keyword?access_token={accessToken}";
+
+        string limitedText = text.Length > 2000 ? text.Substring(0, 2000) : text;
+        string title = text.Length > 20 ? text.Substring(0, 20) : text;
+        
+        var data = new KeywordRequestData { content = limitedText, title = title };
+        string jsonData = JsonUtility.ToJson(data);
+
+        UnityWebRequest request = UnityWebRequest.PostWwwForm(url, "POST");
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                var result = JsonUtility.FromJson<KeywordResult>(request.downloadHandler.text);
+                onComplete?.Invoke(result);
+            }
+            catch
+            {
+                onComplete?.Invoke(null);
+            }
+        }
+        else
+        {
+            onComplete?.Invoke(null);
+        }
+
+        request.Dispose();
+    }
+
+    // 数据模型类
+    [Serializable]
+    private class SiliconFlowResponse { public string text; }
+
+    [Serializable]
+    private class BaiduTokenResponse { public string access_token; }
+
+    [Serializable]
+    private class SentimentRequestData { public string text; }
+
+    [Serializable]
+    private class SentimentResult { public SentimentItem[] items; }
+
+    [Serializable]
+    private class SentimentItem { public int sentiment; }
+
+    [Serializable]
+    private class KeywordRequestData { public string content; public string title; }
+
+    [Serializable]
+    private class KeywordResult { public KeywordItem[] items; }
+
+    [Serializable]
+    private class KeywordItem { public string tag; }
+
+    [Serializable]
+    private class AnalysisResult
+    {
+        public List<string> sentimentTags = new List<string>();
+        public List<string> keywordTags = new List<string>();
     }
 }

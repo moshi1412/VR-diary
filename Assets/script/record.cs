@@ -139,7 +139,7 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
     }
 
 
-    // 核心：将录音路径存入DataManager（适配新逻辑）
+        // 核心：将录音路径存入DataManager的ballonprocess下的ballmemory中（适配新逻辑）
     private void SavePathToDataManager(string recordingPath)
     {
         if (dataManager == null)
@@ -148,35 +148,29 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
             return;
         }
 
-        // 1. 先尝试获取该ID已有的数据（如果存在）
-        bool hasExistingData = dataManager.FetchDataById(targetMemoryId);
-        DataManager.MemoryData newData;
-
-        if (hasExistingData)
+        // 检查ballonprocess是否存在
+        if (dataManager.BallOnProcess == null)
         {
-            // 2. 若存在，更新录音路径（保留其他字段）
-            newData = dataManager.GetCurrentData();
-            newData.recordingpath = recordingPath;
-            newData.createTime = DateTime.Now.ToString(); // 更新时间戳
-        }
-        else
-        {
-            // 3. 若不存在，创建新数据（必须包含唯一memoryId）
-            newData = new DataManager.MemoryData()
-            {
-                memoryId = targetMemoryId, // 关键：指定唯一ID
-                recordingpath = recordingPath,
-                createTime = DateTime.Now.ToString(),
-                description = "Audio recording", // 默认描述（可扩展）
-                picturepath = "" // 留空，可后续补充
-            };
+            Debug.LogError("DataManager.ballonprocess is null, cannot save path!");
+            return;
         }
 
-        // 4. 保存数据（覆盖式存储，新DataManager会处理文件读写）
-        dataManager.AddData(newData);
-        Debug.Log($"Recording path saved to memory ID: {targetMemoryId}");
+        // 获取ballonprocess上的ballmemory组件（假设是自定义组件BallMemory）
+        BallMemory ballMemory = dataManager.BallOnProcess.GetComponent<BallMemory>();
+        if (ballMemory == null)
+        {
+            Debug.LogError("ballmemory component not found on ballonprocess!");
+            return;
+        }
+        BallMemory.MemoryData tempData =ballMemory.BallData.Value;
+        // 将录音路径存入ballmemory中
+        tempData.recordingpath = recordingPath;
+        // 可同时更新时间戳（如果ballmemory有该字段）
+        tempData.createTime = DateTime.Now.ToString();
+        ballMemory.BallData=tempData;
+
+        Debug.Log($"Recording path saved to ballmemory (Memory ID: {targetMemoryId})");
     }
-
 
     // WAV转换相关方法（保持不变）
     private byte[] ConvertToWAV(AudioClip clip)

@@ -8,11 +8,10 @@ public class PlayRecord : MonoBehaviour
 {
     [Header("UI组件")]
     public Toggle playToggle;        // 控制播放/暂停的Toggle
-    public TextMeshProUGUI statusText; // 显示播放状态的文本（可选）
+    public TextMeshProUGUI statusText; // 显示播放状态的文本
 
     [Header("数据与音频配置")]
-    public int targetMemoryId = 1001; // 要查找的记忆ID
-    private DataManager dataManager;
+    public DataManager dataManager;  // 直接引用DataManager（建议在Inspector赋值）
     private AudioSource audioSource;
     private string targetRecordingPath; // 目标录音路径
     private bool isAudioLoaded = false; // 音频是否已加载完成
@@ -34,11 +33,20 @@ public class PlayRecord : MonoBehaviour
             audioSource = gameObject.AddComponent<AudioSource>();
         }
 
-        // 查找DataManager
-        dataManager = GameObject.FindWithTag("DataManager")?.GetComponent<DataManager>();
+        // 自动查找DataManager（如果未手动赋值）
         if (dataManager == null)
         {
-            Debug.LogError("DataManager not found! Check tag 'DataManager'");
+            dataManager = GameObject.FindWithTag("DataManager")?.GetComponent<DataManager>();
+            if (dataManager == null)
+            {
+                dataManager = FindObjectOfType<DataManager>();
+            }
+        }
+
+        // 检查DataManager是否存在
+        if (dataManager == null)
+        {
+            Debug.LogError("DataManager not found!");
             DisableUI();
             return;
         }
@@ -52,7 +60,7 @@ public class PlayRecord : MonoBehaviour
     // Toggle状态改变时触发
     private void OnPlayToggleChanged(bool isOn)
     {
-        // 防止重复处理或DataManager未找到时的操作
+        // 防止重复处理或依赖项缺失时的操作
         if (dataManager == null || isProcessing)
         {
             playToggle.isOn = false;
@@ -61,13 +69,13 @@ public class PlayRecord : MonoBehaviour
 
         if (isOn)
         {
-            // 勾选Toggle：开始查找路径并播放
+            // 勾选Toggle：从BallOnProcess获取路径并播放
             isProcessing = true;
             playToggle.interactable = false;
             statusText.text = loadingText;
             
-            // 从DataManager获取录音路径并播放
-            FetchRecordingPathAndPlay();
+            // 核心逻辑：从BallOnProcess的结构体中获取录音路径
+            FetchPathFromBallOnProcessAndPlay();
         }
         else
         {
@@ -76,38 +84,60 @@ public class PlayRecord : MonoBehaviour
         }
     }
 
-    // 从DataManager获取录音路径并播放
-    private void FetchRecordingPathAndPlay()
+    // 从BallOnProcess的结构体属性中获取录音路径并播放
+    private void FetchPathFromBallOnProcessAndPlay()
     {
-        if (dataManager.FetchDataById(targetMemoryId))
+        // 检查BallOnProcess是否存在
+        if (dataManager.BallOnProcess == null)
         {
-            DataManager.MemoryData memoryData = dataManager.GetCurrentData();
-            if (!string.IsNullOrEmpty(memoryData.recordingpath) && File.Exists(memoryData.recordingpath))
-            {
-                targetRecordingPath = memoryData.recordingpath;
-                StartCoroutine(LoadAndPlayAudio(targetRecordingPath));
-            }
-            else
-            {
-                HandleErrorState("Invalid recording path: " + memoryData.recordingpath);
-            }
+            HandleErrorState("BallOnProcess is not assigned in DataManager!");
+            return;
         }
-        else
+
+        // 获取BallOnProcess上存储结构体的组件（根据实际组件名修改）
+        // 假设气球对象上有BallMemory组件，其中包含MemoryData结构体
+        BallMemory ballMemory = dataManager.BallOnProcess.GetComponent<BallMemory>();
+        if (ballMemory == null)
         {
-            HandleErrorState("No data found for memory ID: " + targetMemoryId);
+            HandleErrorState("BallOnProcess has no BallMemory component!");
+            return;
         }
+
+        // 获取结构体数据（注意：如果是可空结构体，需要先判断HasValue）
+        BallMemory.MemoryData? memoryData = ballMemory.BallData;
+        if (!memoryData.HasValue)
+        {
+            HandleErrorState("BallOnProcess has no valid MemoryData!");
+            return;
+        }
+
+        // 提取录音路径并验证
+        string recordingPath = memoryData.Value.recordingpath;
+        if (string.IsNullOrEmpty(recordingPath) || !File.Exists(recordingPath))
+        {
+            HandleErrorState("Invalid or missing recording path: " + recordingPath);
+            return;
+        }
+
+        // 路径有效，加载并播放音频
+        targetRecordingPath = recordingPath;
+        StartCoroutine(LoadAndPlayAudio(targetRecordingPath));
     }
 
     // 加载并播放音频
     private IEnumerator LoadAndPlayAudio(string path)
     {
-        using (WWW www = new WWW("file://" + path))
+        // 使用UnityWebRequest替代过时的WWW
+        using (UnityEngine.Networking.UnityWebRequest www = UnityEngine.Networking.UnityWebRequestMultimedia.GetAudioClip(
+            "file://" + path, 
+            UnityEngine.AudioType.WAV // 根据实际音频格式修改（如MP3）
+        ))
         {
-            yield return www;
+            yield return www.SendWebRequest();
 
-            if (string.IsNullOrEmpty(www.error))
+            if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
-                audioSource.clip = www.GetAudioClip();
+                audioSource.clip = UnityEngine.Networking.DownloadHandlerAudioClip.GetContent(www);
                 isAudioLoaded = true;
                 PlayAudio();
                 Debug.Log("Loaded and playing recording from: " + path);
@@ -149,7 +179,7 @@ public class PlayRecord : MonoBehaviour
         Debug.LogError(errorLog);
     }
 
-    // 禁用UI（DataManager未找到时）
+    // 禁用UI（依赖项缺失时）
     private void DisableUI()
     {
         playToggle.interactable = false;
