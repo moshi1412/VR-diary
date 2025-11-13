@@ -10,7 +10,7 @@ public class BallOperation : MonoBehaviour
     // 只触发一次（可选）
     public bool triggerOnce = true;
     // 标记是否已触发
-    public bool hasTriggered = false;
+    //public bool hasTriggered = false;
     //public bool BallReachButtom=false;
     private void Start()
     {
@@ -22,9 +22,9 @@ public class BallOperation : MonoBehaviour
     public void BallGenerate( BallMemory.MemoryData? MData)
     {
         Debug.Log("Start new generate ball");
-        if (hasTriggered && triggerOnce) return;
+        if (triggerOnce) return;
         GameObject newball=Instantiate(prefabToSpawn, spawnPosition.position, spawnPosition.rotation);
-        hasTriggered = true;
+        //hasTriggered = true;
         if(!MData.HasValue)
         {
             newball.GetComponent<BallMemory>().BallData=MData;

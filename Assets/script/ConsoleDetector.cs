@@ -1,17 +1,21 @@
 using UnityEngine;
 public class ConsoleDetector : MonoBehaviour
 {
-    private Animator UIpanelgroup;
-    public DataManager database;
-    private void Start()
-    {
-        UIpanelgroup=GameObject.FindWithTag("PanelGroup").GetComponent<Animator>();
-    }
+    public Animator UIpanelgroup;
+    public GameObject datamanager;
+    //private void Start()
+    //{
+
+    //    UIpanelgroup=GameObject.FindWithTag("PanelGroup").GetComponent<Animator>();
+    //}
     private void OnTriggerStay(Collider other)
     {
+        DataManager database=datamanager.GetComponent<DataManager>();
         if (other.CompareTag("Ball")&&database.BallOnProcess is not null)
         {
+            Debug.Log("detect the ball");
             database.BallOnProcess=other.gameObject;
+            Debug.Log(other.gameObject.tag);
             UIpanelgroup.SetBool("in",false);
             UIpanelgroup.SetBool("out",true);
 
@@ -19,6 +23,7 @@ public class ConsoleDetector : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
+        DataManager database = datamanager.GetComponent<DataManager>();
         if (other.CompareTag("Ball"))
             database.BallOnProcess=null;
             UIpanelgroup.SetBool("out",false);
