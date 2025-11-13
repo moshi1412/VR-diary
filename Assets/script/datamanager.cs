@@ -1,154 +1,151 @@
 using UnityEngine;
 using System;
 using System.IO;
+using System.Collections.Generic;
 
-using System.Collections.Generic; // 添加这一行，导入List所在的命名空间
 public class DataManager : MonoBehaviour
 {
     private string dataPath;
-    // 存储唯一匹配的记忆数据（不再是列表）
-    public MemoryData currentData;
-    // 标记是否已找到有效数据
-    private bool hasValidData = false;
+    private List<BallMemory.MemoryData?> currentLabelDataList = new List<BallMemory.MemoryData?>();
+    public GameObject BallOnProcess = null;
 
-    // 可序列化的记忆数据结构（保持不变）
-    [Serializable]
-    public struct MemoryData
-    {
-        public int memoryId; // 唯一标识，用于搜索
-        public string description;
-        public string picturepath;
-        public string recordingpath;
-        public string createTime;
-    }
-
-    // 用于JSON序列化的包装类（仍需保留，因文件存储多条数据）
     [Serializable]
     private class DataWrapper
     {
-        public List<MemoryData> dataList; // 文件中仍存储多条数据，仅读取时筛选
+        public List<BallMemory.MemoryData?> dataList;
     }
 
     private void Awake()
     {
-        // 初始化数据路径
         Debug.Log(Application.persistentDataPath);
         dataPath = Path.Combine(Application.persistentDataPath, "playerData.json");
-        // 初始化为空数据
-        currentData = new MemoryData();
-        hasValidData = false;
     }
 
-    // 保存单条数据（覆盖式保存到文件，仍保留所有数据列表）
-    public void AddData(MemoryData newData)
+    // 保存数据（自动生成唯一ID）
+    public void AddData(BallMemory.MemoryData? newData)
     {
-        // 先读取文件中所有数据
-        List<MemoryData> allData = LoadAllDataFromFile();
-        
-        // 移除相同ID的旧数据（避免重复）
-        allData.RemoveAll(data => data.memoryId == newData.memoryId);
-        // 添加新数据
-        allData.Add(newData);
-        
-        // 保存更新后的所有数据到文件
-        DataWrapper wrapper = new DataWrapper();
-        wrapper.dataList = allData;
-        string json = JsonUtility.ToJson(wrapper, true);
-        File.WriteAllText(dataPath, json);
-        
-        Debug.Log("Saved data with ID: " + newData.memoryId + " to: " + dataPath);
-        
-        // 自动更新当前内存中的数据（如果保存的ID与当前查找的ID一致）
-        if (currentData.memoryId == newData.memoryId)
+        // 检查新数据是否有效
+        if (!newData.HasValue)
         {
-            currentData = newData;
-            hasValidData = true;
+            Debug.LogWarning("Cannot save null data!");
+            return;
         }
+
+        // 强制要求label不为空
+        if (string.IsNullOrEmpty(newData.Value.label))
+        {
+            Debug.LogWarning("Data label cannot be empty! Data will not be saved.");
+            return;
+        }
+
+        // 1. 读取所有现有数据
+        List<BallMemory.MemoryData?> allData = LoadAllDataFromFile();
+
+        // 2. 生成唯一ID（取现有最大ID + 1，若没有数据则从1开始）
+        int newId = GenerateUniqueId(allData);
+
+        // 3. 复制新数据到临时变量，修改其ID（解决可空结构体无法直接修改的问题）
+        BallMemory.MemoryData tempData = newData.Value; // 先获取非空结构体
+        tempData.memoryId = newId; // 赋值新ID
+        BallMemory.MemoryData? dataWithId = tempData; // 转回可空类型
+
+        // 4. 添加带新ID的数据到列表并保存
+        allData.Add(dataWithId);
+        SaveAllDataToFile(allData);
+
+        Debug.Log($"Saved data with ID: {newId}, Label: {dataWithId.Value.label}");
     }
 
-    // 核心功能：通过memoryId从文件查找数据，赋值给currentData
-    public bool FetchDataById(int targetId)
+    // 生成唯一ID（核心逻辑）
+    private int GenerateUniqueId(List<BallMemory.MemoryData?> dataList)
     {
-        // 读取文件中所有数据
-        List<MemoryData> allData = LoadAllDataFromFile();
-        
-        // 遍历查找匹配ID的数据
+        int maxId = 0;
+
+        foreach (var data in dataList)
+        {
+            // 跳过空数据，只处理有值的条目
+            if (data.HasValue && data.Value.memoryId > maxId)
+            {
+                maxId = data.Value.memoryId; // 更新最大ID
+            }
+        }
+
+        // 新ID = 最大ID + 1（确保唯一）
+        return maxId + 1;
+    }
+
+    // 核心功能：通过label查找数据
+    public List<BallMemory.MemoryData?> SearchByLabel(string targetLabel, bool exactMatch = false)
+    {
+        currentLabelDataList.Clear();
+
+        if (string.IsNullOrEmpty(targetLabel))
+        {
+            Debug.LogWarning("Search label cannot be null or empty!");
+            return currentLabelDataList;
+        }
+
+        List<BallMemory.MemoryData?> allData = LoadAllDataFromFile();
         foreach (var data in allData)
         {
-            if (data.memoryId == targetId)
+            if (!data.HasValue) continue; // 跳过空数据
+            if (string.IsNullOrEmpty(data.Value.label)) continue;
+
+            bool isMatch = exactMatch 
+                ? string.Equals(data.Value.label, targetLabel, StringComparison.OrdinalIgnoreCase)
+                : data.Value.label.IndexOf(targetLabel, StringComparison.OrdinalIgnoreCase) >= 0;
+
+            if (isMatch)
             {
-                currentData = data; // 赋值给唯一的struct
-                hasValidData = true;
-                Debug.Log("Fetched data for ID: " + targetId);
-                return true; // 查找成功
+                currentLabelDataList.Add(data);
             }
         }
-        
-        // 未找到时重置数据
-        currentData = new MemoryData();
-        hasValidData = false;
-        Debug.LogWarning("Data with ID: " + targetId + " not found");
-        return false; // 查找失败
+
+        Debug.Log($"Found {currentLabelDataList.Count} data entries matching label: {targetLabel}");
+        return currentLabelDataList;
     }
 
-    // 获取当前已匹配的唯一数据（需先调用FetchDataById成功）
-    public MemoryData GetCurrentData()
+    // 获取最近一次搜索结果
+    public List<BallMemory.MemoryData?> GetLastLabelSearchResults()
     {
-        if (!hasValidData)
-        {
-            Debug.LogWarning("No valid data fetched yet! Call FetchDataById first.");
-        }
-        return currentData;
+        return currentLabelDataList;
     }
 
-    // 检查是否有有效数据
-    public bool HasValidData()
-    {
-        return hasValidData;
-    }
-
-    // 从文件删除指定ID的数据
+    // 根据ID删除数据
     public void DeleteDataById(int targetId)
     {
-        List<MemoryData> allData = LoadAllDataFromFile();
-        int removeCount = allData.RemoveAll(data => data.memoryId == targetId);
-        
-        if (removeCount > 0)
+        List<BallMemory.MemoryData?> allData = LoadAllDataFromFile();
+        int removedCount = allData.RemoveAll(data => data.HasValue && data.Value.memoryId == targetId);
+
+        if (removedCount > 0)
         {
-            // 保存删除后的所有数据到文件
-            DataWrapper wrapper = new DataWrapper();
-            wrapper.dataList = allData;
-            string json = JsonUtility.ToJson(wrapper, true);
-            File.WriteAllText(dataPath, json);
-            
-            Debug.Log("Deleted data with ID: " + targetId);
-            
-            // 如果删除的是当前存储的数据，重置状态
-            if (currentData.memoryId == targetId)
-            {
-                currentData = new MemoryData();
-                hasValidData = false;
-            }
+            SaveAllDataToFile(allData);
+            Debug.Log($"Deleted data with ID: {targetId}");
+            currentLabelDataList.RemoveAll(data => data.HasValue && data.Value.memoryId == targetId);
         }
         else
         {
-            Debug.LogWarning("Data with ID: " + targetId + " not found (delete failed)");
+            Debug.LogWarning($"Data with ID: {targetId} not found (delete failed)");
         }
     }
 
-    // 私有方法：从文件读取所有数据（仅用于内部筛选）
-    private List<MemoryData> LoadAllDataFromFile()
+    // 读取所有数据
+    public List<BallMemory.MemoryData?> LoadAllDataFromFile()
     {
         if (File.Exists(dataPath))
         {
             string json = File.ReadAllText(dataPath);
             DataWrapper wrapper = JsonUtility.FromJson<DataWrapper>(json);
-            return wrapper.dataList ?? new List<MemoryData>();
+            return wrapper.dataList ?? new List<BallMemory.MemoryData?>();
         }
-        else
-        {
-            Debug.Log("Data file not exists, return empty list");
-            return new List<MemoryData>();
-        }
+        return new List<BallMemory.MemoryData?>();
+    }
+
+    // 保存所有数据
+    private void SaveAllDataToFile(List<BallMemory.MemoryData?> dataList)
+    {
+        DataWrapper wrapper = new DataWrapper { dataList = dataList };
+        string json = JsonUtility.ToJson(wrapper, true);
+        File.WriteAllText(dataPath, json);
     }
 }
