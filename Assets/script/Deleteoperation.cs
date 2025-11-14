@@ -7,6 +7,7 @@ public class Deleteoperation : MonoBehaviour
     
     public void DeleteBall()
     {
+        Debug.Log("Start to launch the ball");
         ball=GameObject.FindWithTag("DataManager").GetComponent<DataManager>().BallOnProcess;
         ball.GetComponent<MagLevHover>().TriggerLaunchSequence();
     }

@@ -72,7 +72,7 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
     }
 
 
-    private void StartRecording()
+    public void StartRecording()
     {
         if (isRecording) return;
 
@@ -92,22 +92,22 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
     }
 
 
-    private void StopAndSaveRecording()
+    public string StopAndSaveRecording()
     {
-        if (!isRecording) return;
+        if (!isRecording) return "not recording";
 
         Microphone.End(microphoneDevice);
         isRecording = false;
-        SaveRecording();
+        return SaveRecording();
     }
 
 
-    private void SaveRecording()
+    private string SaveRecording()
     {
         if (recordedClip == null)
         {
             statusText.text = "No recording data";
-            return;
+            return "error";
         }
 
         try
@@ -128,14 +128,17 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
             // 保存路径到DataManager（适配新逻辑）
             SavePathToDataManager(fullPath);
 
-            statusText.text = $"Saved:\n{fileName}";
+            statusText.text = $"Memory Saved";
             Debug.Log($"Audio Saved to: {fullPath}");
+            return fullPath;
         }
         catch (Exception e)
         {
             statusText.text = $"Save failed:\n{e.Message}";
             Debug.LogError($"Save error: {e}");
+            return $"Save error: {e}";
         }
+        
     }
 
 
@@ -162,8 +165,10 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
             Debug.LogError("ballmemory component not found on ballonprocess!");
             return;
         }
-        BallMemory.MemoryData tempData =ballMemory.BallData.Value;
-        // 将录音路径存入ballmemory中
+        BallMemory.MemoryData tempData =new BallMemory.MemoryData();
+        if(ballMemory.BallData.HasValue)
+            tempData =ballMemory.BallData.Value;
+        
         tempData.recordingpath = recordingPath;
         // 可同时更新时间戳（如果ballmemory有该字段）
         tempData.createTime = DateTime.Now.ToString();
