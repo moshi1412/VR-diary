@@ -6,6 +6,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class MagLevHover : MonoBehaviour
 {
+    public static readonly HashSet<MagLevHover> Instances = new HashSet<MagLevHover>();
+    public bool allowButtonSequence = true;   // 如果原来没有就加这一行
+
+
     [Header("Base Binding")]
     public Transform baseTransform;
     public bool autoFindBase = true;
@@ -90,6 +94,11 @@ public class MagLevHover : MonoBehaviour
     void OnEnable()
     {
         if (autoFindBase && baseTransform == null) TryResolveNearestBase();
+        Instances.Add(this);
+    }
+    void OnDisable()
+    {
+        Instances.Remove(this);
     }
 
     public void SetBase(Transform t) => baseTransform = t;
@@ -284,6 +293,7 @@ public class MagLevHover : MonoBehaviour
     public void TriggerLaunchSequence()
     {
         // if (!allowButtonSequence) return;
+        if (!allowButtonSequence) return;
         if (_sequenceRoutine != null) StopCoroutine(_sequenceRoutine);
         _sequenceRoutine = StartCoroutine(DoLaunchSequence());
     }

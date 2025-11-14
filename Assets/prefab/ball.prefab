@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 2938436440021545084}
   - component: {fileID: 2805532560081250780}
   - component: {fileID: 5933844604466861533}
-  - component: {fileID: 929753877602293544}
   - component: {fileID: 137811358607763489}
   m_Layer: 0
   m_Name: ball
@@ -53,7 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: 7358e191-33b7-43ca-b066-b2f00531ac66
-  instanceId: 6e454fea-f70d-44f6-89b4-f1bcb6bc3912
+  instanceId: aa27df46-70a3-4e8e-9272-d6ec82a3ba74
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: 
@@ -184,58 +183,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.49999997
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &929753877602293544
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 868621841027356931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e23f450d11c17eb4aace2a6ebda19a31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MagLevHover
-  baseTransform: {fileID: 0}
-  autoFindBase: 1
-  baseSearchInterval: 0.5
-  hoverHeight: 1.2
-  kP: 200
-  kD: 30
-  maxUpForce: 1500
-  kLat: 60
-  kLatD: 8
-  maxLatForce: 1000
-  alignTorque: 10
-  angularDamping: 1.5
-  useForceRegion: 1
-  regionRadius: 0.5
-  regionHeightMin: 0
-  regionHeightMax: 2.5
-  edgeSmooth: 0.11
-  glowColor: {r: 1, g: 1, b: 1, a: 1}
-  glowOnIntensity: 5
-  glowOffIntensity: 0
-  glowThreshold: 0.05
-  glowLerpSpeed: 8
-  autoReactivate: 1
-  reactivateDelay: 0.5
-  gizmoRadius: 0.15
-  drawRegion: 1
-  allowButtonSequence: 0
-  prepHeightOffset: -0.5
-  prepDuration: 1
-  prepKPMult: 0.4
-  prepKDMult: 0.6
-  prepKLatMult: 1.5
-  centerPosThreshold: 0.05
-  centerHeightThreshold: 0.05
-  centerSpeedThreshold: 0.2
-  centerTimeout: 3
-  launchImpulse: 100
-  launchBoostKPMult: 2
-  launchBoostKDMult: 1.5
-  launchBoostTime: 0.5
 --- !u!114 &137811358607763489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,11 +195,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17b5ff8e2842577469563ebb08d0a283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  memoryId: 0
-  description: 
-  picturepath: 
-  recordingpath: 
-  createTime: 
 --- !u!1 &7490226173431309147
 GameObject:
   m_ObjectHideFlags: 0
@@ -300,7 +242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: f8766c17-aaf8-4b55-9431-de8deea83842
-  instanceId: bda7425c-1ee2-47e7-a1ef-5c16bcbb9bb9
+  instanceId: 5e948c4a-f455-4325-b306-58cbdfe27458
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: f8338144-8280-4ff6-9455-ae2bb9c20fe8

@@ -19,6 +19,7 @@ public class LabelSearchHandler:MonoBehaviour
     {
             Debug.Log("Start Search");
             bool ifsuccess=SearchByLabel();
+            Debug.Log($"ifsuccess:{ifsuccess}");
             if(!ifsuccess)
             { 
                 Debug.Log("not found");
