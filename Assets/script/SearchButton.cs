@@ -2,16 +2,17 @@ using UnityEngine;
 
 public class SearchButton : MonoBehaviour
 {
-    private Animator UIpanelgroup;
+    public Animator UIpanelgroup;
     public bool IsTriggered;
     private void Start()
     {
         IsTriggered=true;
-        UIpanelgroup=GameObject.FindWithTag("PanelGroup").GetComponent<Animator>();
+        // UIpanelgroup=GameObject.FindWithTag("PanelGroup").GetComponent<Animator>();
     }
     
     public void OperationAfterChange()
     {
+        Debug.Log("the player has touched the search button!");
         if (!IsTriggered)
         {
             MainPanelMovein();
@@ -27,15 +28,15 @@ public class SearchButton : MonoBehaviour
     {
         //if (other.CompareTag("Ball"))
         //{
-            UIpanelgroup.SetBool("searchin",false);
-            UIpanelgroup.SetBool("searchout",true);
+            UIpanelgroup.SetBool("searchin",true);
+            UIpanelgroup.SetBool("searchout",false);
         //}
     }
     public void MainPanelMovein()
     {
         //if (other.CompareTag("Ball"))
-            UIpanelgroup.SetBool("searchout",false);
-            UIpanelgroup.SetBool("searchin",true);
+            UIpanelgroup.SetBool("searchout",true);
+            UIpanelgroup.SetBool("searchin",false);
     }
     
 }

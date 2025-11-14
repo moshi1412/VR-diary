@@ -52,7 +52,7 @@ public class MagLevHover : MonoBehaviour
     public bool drawRegion = true;
 
     [Header("Launch Sequence (Button)")]
-    public bool allowButtonSequence = true;
+    // public bool allowButtonSequence = true;
     public float prepHeightOffset = -0.5f;  // how much below hoverHeight to sink (negative)
     public float prepDuration = 1.0f;       // time to ease into prep state
     public float prepKPMult = 0.4f;         // vertical kP multiplier during prep (softer)
@@ -283,7 +283,7 @@ public class MagLevHover : MonoBehaviour
 #endif
     public void TriggerLaunchSequence()
     {
-        if (!allowButtonSequence) return;
+        // if (!allowButtonSequence) return;
         if (_sequenceRoutine != null) StopCoroutine(_sequenceRoutine);
         _sequenceRoutine = StartCoroutine(DoLaunchSequence());
     }
