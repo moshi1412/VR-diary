@@ -128,7 +128,7 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
             // 保存路径到DataManager（适配新逻辑）
             SavePathToDataManager(fullPath);
 
-            statusText.text = $"Saved:\n{fileName}";
+            statusText.text = $"Memory Saved";
             Debug.Log($"Audio Saved to: {fullPath}");
         }
         catch (Exception e)
@@ -162,8 +162,10 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
             Debug.LogError("ballmemory component not found on ballonprocess!");
             return;
         }
-        BallMemory.MemoryData tempData =ballMemory.BallData.Value;
-        // 将录音路径存入ballmemory中
+        BallMemory.MemoryData tempData =new BallMemory.MemoryData();
+        if(ballMemory.BallData.HasValue)
+            tempData =ballMemory.BallData.Value;
+        
         tempData.recordingpath = recordingPath;
         // 可同时更新时间戳（如果ballmemory有该字段）
         tempData.createTime = DateTime.Now.ToString();

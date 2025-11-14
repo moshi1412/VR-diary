@@ -9,7 +9,8 @@ public class SaveButtonController : MonoBehaviour
     public TextMeshProUGUI statusText; // 显示状态的文本
 
     [Header("数据关联")]
-    public DataManager dataManager; // 直接引用DataManager（建议在Inspector手动赋值）
+    public DataManager dataManager; // 数据管理器引用
+    public AudioAnalyzer audioAnalyzer; // 音频分析器引用
 
     // 保存前的初始文本（可在Inspector中修改）
     [SerializeField] private string defaultText = "Save";
@@ -18,9 +19,35 @@ public class SaveButtonController : MonoBehaviour
     private void Start()
     {
         // 初始化UI状态
+        saveToggle.isOn=false;
         statusText.text = defaultText;
         
-        // 自动查找DataManager（如果未手动赋值）
+        // 自动查找必要组件
+        AutoFindReferences();
+
+        // 检查必要组件是否存在
+        if (dataManager == null)
+        {
+            Debug.LogError("场景中未找到DataManager组件！");
+            saveToggle.interactable = false;
+            return;
+        }
+
+        if (audioAnalyzer == null)
+        {
+            Debug.LogError("未设置AudioAnalyzer组件！");
+            saveToggle.interactable = false;
+            return;
+        }
+
+        // 绑定Toggle事件
+        saveToggle.onValueChanged.AddListener(OnSaveToggleChanged);
+    }
+
+    // 自动查找引用的组件
+    private void AutoFindReferences()
+    {
+        // 查找DataManager
         if (dataManager == null)
         {
             dataManager = GameObject.FindWithTag("DataManager")?.GetComponent<DataManager>();
@@ -30,16 +57,11 @@ public class SaveButtonController : MonoBehaviour
             }
         }
 
-        // 检查DataManager是否存在
-        if (dataManager == null)
+        // 查找AudioAnalyzer
+        if (audioAnalyzer == null)
         {
-            Debug.LogError("场景中未找到DataManager组件！");
-            saveToggle.interactable = false; // 禁用Toggle防止错误
-            return;
+            audioAnalyzer = FindObjectOfType<AudioAnalyzer>();
         }
-
-        // 绑定Toggle事件
-        saveToggle.onValueChanged.AddListener(OnSaveToggleChanged);
     }
 
 
@@ -47,14 +69,13 @@ public class SaveButtonController : MonoBehaviour
     private void OnSaveToggleChanged(bool isOn)
     {
         // 只有当Toggle被勾选时才执行保存逻辑
-        if (isOn)
-        {
-            StartSaveProcess();
-        }
+        
+        StartSaveProcess();
+        
     }
 
 
-    // 保存流程：从BallOnProcess中获取BallData并保存
+    // 保存流程：先分析音频获取标签，再保存数据
     private void StartSaveProcess()
     {
         // 检查必要引用是否存在
@@ -80,19 +101,39 @@ public class SaveButtonController : MonoBehaviour
             return;
         }
 
-        // 获取要保存的结构体（BallData）
-        BallMemory.MemoryData? dataToSave = ballDataComponent.BallData;
+        // 显示处理中状态
+        statusText.text = "processing...";
+        saveToggle.interactable = false;
 
-        // 显示保存中状态
-        statusText.text = "saving......";
-        saveToggle.interactable = false; // 禁用Toggle防止重复点击
+        // 开始音频分析，分析完成后保存数据
+        audioAnalyzer.ProcessAudioAndGetResults((sentiment, keywords, combinedTags) => 
+        {
+            // 更新球数据的标签信息
+            var ballData = ballDataComponent.BallData;
+            if (ballData.HasValue)
+            {
+                var updatedData = ballData.Value;
+                updatedData.label = sentiment+" "+keywords+" "+combinedTags;
+                // updatedData.keywordTags = keywords;
+                // updatedData.combinedTags = combinedTags;
+                ballDataComponent.BallData = updatedData;
 
-        // 调用DataManager保存数据
-        dataManager.AddData(dataToSave);
-        Debug.Log($"已保存气球数据，label: {dataToSave.Value.label}");
+                // 保存更新后的数据
+                dataManager.AddData(updatedData);
+                Debug.Log($"已保存记忆球数据，label: {updatedData.label}，标签: {combinedTags}");
+                
+                // 显示成功状态
+                statusText.text = "saved!";
+            }
+            else
+            {
+                Debug.LogError("球数据为空，无法保存");
+                statusText.text = "save failed";
+            }
 
-        // 延迟重置UI（给用户反馈）
-        Invoke(nameof(ResetUI), 1.0f);
+            // 延迟重置UI
+            Invoke(nameof(ResetUI), 1.0f);
+        });
     }
 
 

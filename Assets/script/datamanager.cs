@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class DataManager : MonoBehaviour
 {
-    private string dataPath;
+    public string dataPath;
     private List<BallMemory.MemoryData?> currentLabelDataList = new List<BallMemory.MemoryData?>();
     public GameObject BallOnProcess = null;
 
@@ -18,7 +18,8 @@ public class DataManager : MonoBehaviour
     private void Awake()
     {
         Debug.Log(Application.persistentDataPath);
-        dataPath = Path.Combine(Application.persistentDataPath, "playerData.json");
+        if(dataPath=="")
+            dataPath = Path.Combine(Application.persistentDataPath, "playerData.json");
     }
 
     // 保存数据（自动生成唯一ID）

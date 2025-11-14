@@ -10,12 +10,12 @@ public class AudioAnalyzer : MonoBehaviour
 {
     // 硅基流动API配置
     [Header("硅基流动API配置")]
-    public string siliconFlowApiKey = "";
+    private string siliconFlowApiKey ="sk-hrxhrcovururgimnfqxwoggwysrzgahwaplycsyowitwgxnf" ;
 
     // 百度智能云API配置
     [Header("百度智能云API配置")]
-    public string baiduApiKey = "";
-    public string baiduSecretKey = "";
+    private string baiduApiKey = "UbjdHrXLaZWF3B0jiuBCOvfx";
+    private string baiduSecretKey ="qXm1FPw9RtLzyq0ryqJ9tf4bnH47uMEC";
 
     // 音频文件路径（外部传入）
     [Header("文件路径")]
@@ -44,7 +44,14 @@ public class AudioAnalyzer : MonoBehaviour
             InvokeCallback("错误：请设置百度智能云API密钥和Secret Key", "", "");
             return;
         }
-
+        DataManager dm=GameObject.FindWithTag("DataManager").GetComponent<DataManager>();
+        BallMemory.MemoryData? md=dm.BallOnProcess.GetComponent<BallMemory>().BallData;
+        if(!md.HasValue)
+        {
+            InvokeCallback($"错误：球中不存在记录", "", "");
+            return;
+        }
+        audioFilePath=md.Value.recordingpath;
         if (string.IsNullOrEmpty(audioFilePath) || !File.Exists(audioFilePath))
         {
             InvokeCallback($"错误：音频文件不存在 → {audioFilePath}", "", "");
