@@ -10,19 +10,19 @@ public class AudioAnalyzer : MonoBehaviour
 {
     // 硅基流动API配置
     [Header("硅基流动API配置")]
-    public string siliconFlowApiKey = "";
+    private string siliconFlowApiKey ="sk-hrxhrcovururgimnfqxwoggwysrzgahwaplycsyowitwgxnf" ;
 
     // 百度智能云API配置
     [Header("百度智能云API配置")]
-    public string baiduApiKey = "";
-    public string baiduSecretKey = "";
+    private string baiduApiKey = "UbjdHrXLaZWF3B0jiuBCOvfx";
+    private string baiduSecretKey ="qXm1FPw9RtLzyq0ryqJ9tf4bnH47uMEC";
 
     // 音频文件路径（外部传入）
     [Header("文件路径")]
     public string audioFilePath = "";
 
     // 分析结果回调（包含情绪结果和标签字符串）
-    private Action<string, string, string> onAnalysisCompleted; // 参数：情绪结果、关键词、合并标签
+    public Action<string, string, string> onAnalysisCompleted; // 参数：情绪结果、关键词、合并标签
 
     /// <summary>
     /// 外部调用此方法开始处理音频并获取结果
@@ -44,7 +44,17 @@ public class AudioAnalyzer : MonoBehaviour
             InvokeCallback("错误：请设置百度智能云API密钥和Secret Key", "", "");
             return;
         }
-
+        if(audioFilePath is "")
+        {
+            DataManager dm=GameObject.FindWithTag("DataManager").GetComponent<DataManager>();
+            BallMemory.MemoryData? md=dm.BallOnProcess.GetComponent<BallMemory>().BallData;
+            if(!md.HasValue)
+            {
+                InvokeCallback($"错误：球中不存在记录", "", "");
+                return;
+            }
+            audioFilePath=md.Value.recordingpath;
+        }
         if (string.IsNullOrEmpty(audioFilePath) || !File.Exists(audioFilePath))
         {
             InvokeCallback($"错误：音频文件不存在 → {audioFilePath}", "", "");
@@ -61,7 +71,7 @@ public class AudioAnalyzer : MonoBehaviour
     {
         // 1. 音频转文字
         string recognizedText = null;
-        yield return StartCoroutine(AudioToText(audioFilePath, siliconFlowApiKey, (result) => recognizedText = result));
+        yield return StartCoroutine(AudioToText(audioFilePath,  (result) => recognizedText = result));
 
         if (string.IsNullOrEmpty(recognizedText))
         {
@@ -110,7 +120,7 @@ public class AudioAnalyzer : MonoBehaviour
     /// <summary>
     /// 音频转文字（硅基流动API）
     /// </summary>
-    private IEnumerator AudioToText(string audioPath, string apiKey, Action<string> onComplete)
+    public IEnumerator AudioToText(string audioPath, Action<string> onComplete)
     {
         string url = "https://api.siliconflow.cn/v1/audio/transcriptions";
 
@@ -132,7 +142,7 @@ public class AudioAnalyzer : MonoBehaviour
         form.AddBinaryData("file", audioData, Path.GetFileName(audioPath));
 
         UnityWebRequest request = UnityWebRequest.Post(url, form);
-        request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+        request.SetRequestHeader("Authorization", $"Bearer {siliconFlowApiKey}");
 
         Debug.Log($"开始识别音频：{audioPath}");
         yield return request.SendWebRequest();

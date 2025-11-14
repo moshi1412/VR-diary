@@ -21,8 +21,9 @@ public class PlayRecord : MonoBehaviour
     [SerializeField] private string defaultText = "Play Recording";
     [SerializeField] private string loadingText = "Loading...";
     [SerializeField] private string playingText = "Playing...";
-    [SerializeField] private string pausedText = "Paused";
+    [SerializeField] private string pausedText = "Stopped";
     [SerializeField] private string errorText = "Recording Not Found";
+    // [SerializeField] private string recordOverText = "Record is over"; // 新增：播放结束文本
 
     private void Start()
     {
@@ -95,7 +96,6 @@ public class PlayRecord : MonoBehaviour
         }
 
         // 获取BallOnProcess上存储结构体的组件（根据实际组件名修改）
-        // 假设气球对象上有BallMemory组件，其中包含MemoryData结构体
         BallMemory ballMemory = dataManager.BallOnProcess.GetComponent<BallMemory>();
         if (ballMemory == null)
         {
@@ -103,7 +103,7 @@ public class PlayRecord : MonoBehaviour
             return;
         }
 
-        // 获取结构体数据（注意：如果是可空结构体，需要先判断HasValue）
+        // 获取结构体数据
         BallMemory.MemoryData? memoryData = ballMemory.BallData;
         if (!memoryData.HasValue)
         {
@@ -127,10 +127,9 @@ public class PlayRecord : MonoBehaviour
     // 加载并播放音频
     private IEnumerator LoadAndPlayAudio(string path)
     {
-        // 使用UnityWebRequest替代过时的WWW
         using (UnityEngine.Networking.UnityWebRequest www = UnityEngine.Networking.UnityWebRequestMultimedia.GetAudioClip(
             "file://" + path, 
-            UnityEngine.AudioType.WAV // 根据实际音频格式修改（如MP3）
+            UnityEngine.AudioType.WAV // 根据实际音频格式修改
         ))
         {
             yield return www.SendWebRequest();
@@ -185,14 +184,14 @@ public class PlayRecord : MonoBehaviour
         playToggle.interactable = false;
         statusText.text = errorText;
     }
-
-    // 音频播放完成后自动重置Toggle
-    private void Update()
+     private void Update()
     {
-        if (isAudioLoaded && !audioSource.isPlaying && playToggle.isOn)
+        // 当音频加载完成、不在播放中，且Toggle是勾选状态（说明是播放完毕而非手动暂停）
+        if (isAudioLoaded && !audioSource.isPlaying )
         {
-            playToggle.isOn = false;
-            statusText.text = defaultText;
+            
+            statusText.text = pausedText; // 显示“Record is over”
         }
     }
+    
 }

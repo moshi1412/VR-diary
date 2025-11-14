@@ -7,8 +7,7 @@ public class BallOperation : MonoBehaviour
     public GameObject prefabToSpawn;
     // 生成物体的位置（可选，默认使用当前物体位置）
     private Transform spawnPosition;
-    // 只触发一次（可选）
-    public bool triggerOnce = true;
+   
     // 标记是否已触发
     //public bool hasTriggered = false;
     //public bool BallReachButtom=false;
@@ -22,7 +21,6 @@ public class BallOperation : MonoBehaviour
     public void BallGenerate( BallMemory.MemoryData? MData)
     {
         Debug.Log("Start new generate ball");
-        if (triggerOnce) return;
         GameObject newball=Instantiate(prefabToSpawn, spawnPosition.position, spawnPosition.rotation);
         //hasTriggered = true;
         if(!MData.HasValue)
@@ -37,6 +35,7 @@ public class BallOperation : MonoBehaviour
     }
     private IEnumerator GenerateCoroutine(List<BallMemory.MemoryData?> dataList)
     {
+        Debug.Log("generate multiple balls");
         // 遍历列表中的每个元素
         for (int i = 0; i < dataList.Count; i++)
         {
