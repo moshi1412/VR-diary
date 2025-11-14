@@ -21,5 +21,6 @@ public class BallMemory : MonoBehaviour
         public string createTime;
         public string label; // 核心搜索字段
         public int color;
+        public string videopath;
     }
 }
