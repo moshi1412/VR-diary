@@ -8,7 +8,7 @@ public class ConsoleDetector : MonoBehaviour
 
     //    UIpanelgroup=GameObject.FindWithTag("PanelGroup").GetComponent<Animator>();
     //}
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         DataManager database=datamanager.GetComponent<DataManager>();
         if (other.CompareTag("Ball")&&database.BallOnProcess is not null)
