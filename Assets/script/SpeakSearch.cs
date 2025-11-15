@@ -153,7 +153,7 @@ public class AudioVisualizerWithSave : MonoBehaviour
             Debug.Log("停止录音，触发保存逻辑");
             // 恢复状态文本为"Press to Speak"
             if (statusText != null)
-                statusText.text = DEFAULT_TEXT;
+                statusText.text = "waiting for analysis";
 
             Debug.Log("STT");
             StartCoroutine(aa.AudioToText(
@@ -167,6 +167,7 @@ public class AudioVisualizerWithSave : MonoBehaviour
     {
         Debug.Log($"label1: {p1}");
         ConfirmButton.LabelBySpeak = p1;
+        statusText.text=p1;
     }
 
     // 获取音量（基于原有录音类的AudioClip）

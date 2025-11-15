@@ -53,14 +53,14 @@ public class SaveButtonController : MonoBehaviour
             dataManager = GameObject.FindWithTag("DataManager")?.GetComponent<DataManager>();
             if (dataManager == null)
             {
-                dataManager = FindObjectOfType<DataManager>();
+                dataManager = FindAnyObjectByType<DataManager>();
             }
         }
 
         // 查找AudioAnalyzer
         if (audioAnalyzer == null)
         {
-            audioAnalyzer = FindObjectOfType<AudioAnalyzer>();
+            audioAnalyzer = FindAnyObjectByType<AudioAnalyzer>();
         }
     }
 

@@ -7,7 +7,7 @@ public class BallOperation : MonoBehaviour
     public GameObject prefabToSpawn;
     // 生成物体的位置（可选，默认使用当前物体位置）
     private Transform spawnPosition;
-   
+    private GameObject BallListObject;
     // 标记是否已触发
     //public bool hasTriggered = false;
     //public bool BallReachButtom=false;
@@ -15,17 +15,28 @@ public class BallOperation : MonoBehaviour
     {
             spawnPosition=prefabToSpawn.transform;
             spawnPosition.position = new Vector3(15.7399998f,-10.04f,20.8700008f);
+            BallListObject=GameObject.FindWithTag("BallList");
 
     }
 
     public void BallGenerate( BallMemory.MemoryData? MData)
     {
         Debug.Log("Start new generate ball");
-        GameObject newball=Instantiate(prefabToSpawn, spawnPosition.position, spawnPosition.rotation);
+        // GameObject newball=Instantiate(prefabToSpawn, spawnPosition.position, spawnPosition.rotation);
+         // 实例化球（若指定了父物体，则生成在父物体下）
+        GameObject newBall = Instantiate(
+            prefabToSpawn, 
+            spawnPosition.position, 
+            spawnPosition.rotation, 
+            BallListObject.transform // 可选：指定父物体，优化层级结构
+        );
+        newBall.transform.position = spawnPosition.position;
         //hasTriggered = true;
-        if(!MData.HasValue)
+        if(MData.HasValue)
         {
-            newball.GetComponent<BallMemory>().BallData=MData;
+            // Debug.Log("videopath:"+MData.Value.videopath);
+            newBall.GetComponent<BallMemory>().DataUpdate(MData);
+            newBall.name="Ball"+MData.Value.memoryId.ToString();
         }
     }
 

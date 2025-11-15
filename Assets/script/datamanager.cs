@@ -17,7 +17,7 @@ public class DataManager : MonoBehaviour
             dataPath = Path.Combine(Application.persistentDataPath, "playerData.json");
     }
 
-    // 原有方法名不变：添加数据
+    // 添加数据
     public void AddData(BallMemory.MemoryData? newData)
     {
         if (!newData.HasValue)
@@ -48,7 +48,7 @@ public class DataManager : MonoBehaviour
         Debug.Log($"Saved data with ID: {newId}, Label: {dataWithId.Value.label}");
     }
 
-    // 原有方法名不变：生成唯一ID
+    // 生成唯一ID
     private int GenerateUniqueId(List<BallMemory.MemoryData?> dataList)
     {
         int maxId = 0;
@@ -62,7 +62,7 @@ public class DataManager : MonoBehaviour
         return maxId + 1;
     }
 
-    // 原有方法名不变：按标签搜索
+    // 按标签搜索
     public List<BallMemory.MemoryData?> SearchByLabel(string targetLabel, bool exactMatch = false)
     {
         currentLabelDataList.Clear();
@@ -91,13 +91,13 @@ public class DataManager : MonoBehaviour
         return currentLabelDataList;
     }
 
-    // 原有方法名不变：获取搜索结果
+    // 获取搜索结果
     public List<BallMemory.MemoryData?> GetLastLabelSearchResults()
     {
         return currentLabelDataList;
     }
 
-    // 原有方法名不变：按ID删除
+    // 按ID删除
     public void DeleteDataById(int targetId)
     {
         List<BallMemory.MemoryData?> allData = LoadAllDataFromFile();
@@ -115,7 +115,7 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    // 原有方法名不变：读取数据（核心修改：无结构体解析）
+    // 读取数据（已添加videopath处理）
     public List<BallMemory.MemoryData?> LoadAllDataFromFile()
     {
         var result = new List<BallMemory.MemoryData?>();
@@ -125,8 +125,8 @@ public class DataManager : MonoBehaviour
         try
         {
             string json = File.ReadAllText(dataPath);
-            JObject jsonObj = JObject.Parse(json); // 解析根对象
-            JArray dataArray = jsonObj["dataList"] as JArray; // 获取数据数组
+            JObject jsonObj = JObject.Parse(json);
+            JArray dataArray = jsonObj["dataList"] as JArray;
 
             if (dataArray == null)
                 return result;
@@ -139,7 +139,7 @@ public class DataManager : MonoBehaviour
                     continue;
                 }
 
-                // 逐层读取字段（手动映射）
+                // 读取数据时包含videopath
                 BallMemory.MemoryData data = new BallMemory.MemoryData
                 {
                     memoryId = item["memoryId"]?.Value<int>() ?? 0,
@@ -147,7 +147,8 @@ public class DataManager : MonoBehaviour
                     recordingpath = item["recordingpath"]?.Value<string>() ?? "",
                     createTime = item["createTime"]?.Value<string>() ?? "",
                     label = item["label"]?.Value<string>() ?? "",
-                    color = item["color"]?.Value<int>() ?? 0
+                    color = item["color"]?.Value<int>() ?? 0,
+                    videopath = item["videopath"]?.Value<string>() ?? "" // 新增：读取videopath
                 };
                 result.Add(data);
             }
@@ -160,7 +161,7 @@ public class DataManager : MonoBehaviour
         return result;
     }
 
-    // 原有方法名不变：保存数据（核心修改：无结构体构建）
+    // 保存数据（已添加videopath处理）
     private void SaveAllDataToFile(List<BallMemory.MemoryData?> dataList)
     {
         try
@@ -176,7 +177,7 @@ public class DataManager : MonoBehaviour
                     continue;
                 }
 
-                // 逐层构建JSON对象
+                // 保存数据时包含videopath
                 JObject item = new JObject
                 {
                     { "memoryId", data.Value.memoryId },
@@ -184,7 +185,8 @@ public class DataManager : MonoBehaviour
                     { "recordingpath", data.Value.recordingpath },
                     { "createTime", data.Value.createTime },
                     { "label", data.Value.label },
-                    { "color", data.Value.color }
+                    { "color", data.Value.color },
+                    { "videopath", data.Value.videopath } // 新增：保存videopath
                 };
                 dataArray.Add(item);
             }
