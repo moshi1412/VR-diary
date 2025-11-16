@@ -24,25 +24,44 @@ public class SkyboxSetup : MonoBehaviour
 
     private void LoadAndSetSkybox(string imagePath)
     {
+        if (!File.Exists(imagePath))
+        {
+            Debug.LogError("图片文件不存在：" + imagePath);
+            return;
+        }
+
         // 读取图片文件
         byte[] imageData = File.ReadAllBytes(imagePath);
         Texture2D skyboxTexture = new Texture2D(2048, 2048, TextureFormat.RGB24, false);
-        skyboxTexture.LoadImage(imageData); // 自动解析图片格式
+        bool loadSuccess = skyboxTexture.LoadImage(imageData); // 自动解析图片格式
+        if (!loadSuccess)
+        {
+            Debug.LogError("图片加载失败，可能格式不支持：" + imagePath);
+            return;
+        }
 
-        // 设置纹理属性（重要：天空盒需要重复模式和过滤模式设置）
-        skyboxTexture.wrapMode = TextureWrapMode.Repeat;
+        // 设置纹理属性（全景图需要Clamp模式避免边缘重复）
+        skyboxTexture.wrapMode = TextureWrapMode.Clamp; // 全景图用Clamp更合适
         skyboxTexture.filterMode = FilterMode.Trilinear;
         skyboxTexture.anisoLevel = 9;
         skyboxTexture.Apply();
 
-        // 创建天空盒材质
-        Material skyboxMat = new Material(Shader.Find("Skybox/Cubemap"));
-        // 如果是全景图，需要转换为立方体贴图（这里简化处理，实际可能需要根据图片类型处理）
-        // 注意：普通PNG可能需要特殊处理（如球形映射），建议使用专门的天空盒Shader
-        skyboxMat.mainTexture = skyboxTexture;
+        // 创建天空盒材质：使用支持2D全景图的着色器
+        Material skyboxMat = new Material(Shader.Find("Skybox/Panoramic"));
+        if (skyboxMat == null)
+        {
+            Debug.LogError("找不到Skybox/Panoramic着色器，请确保包含该着色器");
+            return;
+        }
+
+        // 给全景图着色器赋值2D纹理（主纹理属性名为"_MainTex"）
+        skyboxMat.SetTexture("_MainTex", skyboxTexture);
+        // 可选：设置全景图投影方式（球形、圆柱形等，默认是球形）
+        skyboxMat.SetInt("_Projection", 0); // 0=球形，1=圆柱形，2=镜像球形
 
         // 应用天空盒
         RenderSettings.skybox = skyboxMat;
-        DynamicGI.UpdateEnvironment(); // 更新全局光照
+        DynamicGI.UpdateEnvironment();
+        Debug.Log("全景天空盒设置成功");
     }
-}
+    }

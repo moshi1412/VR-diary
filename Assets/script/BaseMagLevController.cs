@@ -49,7 +49,7 @@ public class BaseMagLevController : MonoBehaviour
     public float launchBoostKDMult = 1.5f;
     public float launchBoostTime = 0.5f;
 
-    private readonly List<Rigidbody> balls = new List<Rigidbody>();
+    public readonly List<Rigidbody> balls = new List<Rigidbody>();
 
     // Glow 缓存（每个球对应一个 MaterialPropertyBlock）
     private readonly Dictionary<Renderer, MaterialPropertyBlock> glowBlocks =

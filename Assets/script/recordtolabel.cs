@@ -10,54 +10,54 @@ public class AudioAnalyzer : MonoBehaviour
 {
     // 硅基流动API配置
     [Header("硅基流动API配置")]
-    private string siliconFlowApiKey ="sk-hrxhrcovururgimnfqxwoggwysrzgahwaplycsyowitwgxnf" ;
+    private string siliconFlowApiKey = "sk-hrxhrcovururgimnfqxwoggwysrzgahwaplycsyowitwgxnf";
 
     // 百度智能云API配置
     [Header("百度智能云API配置")]
     private string baiduApiKey = "UbjdHrXLaZWF3B0jiuBCOvfx";
-    private string baiduSecretKey ="qXm1FPw9RtLzyq0ryqJ9tf4bnH47uMEC";
+    private string baiduSecretKey = "qXm1FPw9RtLzyq0ryqJ9tf4bnH47uMEC";
 
     // 音频文件路径（外部传入）
     [Header("文件路径")]
     public string audioFilePath = "";
 
-    // 分析结果回调（包含情绪结果和标签字符串）
-    public Action<string, string, string> onAnalysisCompleted; // 参数：情绪结果、关键词、合并标签
+    // 分析结果回调（新增bool参数表示是否处理成功）
+    public Action<string, string, string, bool> onAnalysisCompleted; // 参数：情绪结果、关键词、合并标签、是否处理成功
 
     /// <summary>
     /// 外部调用此方法开始处理音频并获取结果
     /// </summary>
-    /// <param name="onCompleted">回调函数：(情绪结果, 关键词字符串, 合并标签字符串)</param>
-    public void ProcessAudioAndGetResults(Action<string, string, string> onCompleted)
+    /// <param name="onCompleted">回调函数：(情绪结果, 关键词字符串, 合并标签字符串, 是否处理成功)</param>
+    public void ProcessAudioAndGetResults(Action<string, string, string, bool> onCompleted)
     {
         onAnalysisCompleted = onCompleted;
 
-        // 参数校验
+        // 参数校验（失败场景均返回处理失败）
         if (string.IsNullOrEmpty(siliconFlowApiKey))
         {
-            InvokeCallback("错误：请设置硅基流动API密钥", "", "");
+            InvokeCallback("错误：请设置硅基流动API密钥", "", "", false);
             return;
         }
 
         if (string.IsNullOrEmpty(baiduApiKey) || string.IsNullOrEmpty(baiduSecretKey))
         {
-            InvokeCallback("错误：请设置百度智能云API密钥和Secret Key", "", "");
+            InvokeCallback("错误：请设置百度智能云API密钥和Secret Key", "", "", false);
             return;
         }
-        if(audioFilePath is "")
+        if (audioFilePath is "")
         {
-            DataManager dm=GameObject.FindWithTag("DataManager").GetComponent<DataManager>();
-            BallMemory.MemoryData? md=dm.BallOnProcess.GetComponent<BallMemory>().BallData;
-            if(!md.HasValue)
+            DataManager dm = GameObject.FindWithTag("DataManager").GetComponent<DataManager>();
+            BallMemory.MemoryData? md = dm.BallOnProcess.GetComponent<BallMemory>().BallData;
+            if (!md.HasValue)
             {
-                InvokeCallback($"错误：球中不存在记录", "", "");
+                InvokeCallback($"错误：球中不存在记录", "", "", false);
                 return;
             }
-            audioFilePath=md.Value.recordingpath;
+            audioFilePath = md.Value.recordingpath;
         }
         if (string.IsNullOrEmpty(audioFilePath) || !File.Exists(audioFilePath))
         {
-            InvokeCallback($"错误：音频文件不存在 → {audioFilePath}", "", "");
+            InvokeCallback($"错误：音频文件不存在 → {audioFilePath}", "", "", false);
             return;
         }
 
@@ -71,11 +71,11 @@ public class AudioAnalyzer : MonoBehaviour
     {
         // 1. 音频转文字
         string recognizedText = null;
-        yield return StartCoroutine(AudioToText(audioFilePath,  (result) => recognizedText = result));
+        yield return StartCoroutine(AudioToText(audioFilePath, (result) => recognizedText = result));
 
         if (string.IsNullOrEmpty(recognizedText))
         {
-            InvokeCallback("识别失败", "", "[UNITY_RESULT]|识别失败|无");
+            InvokeCallback("识别失败", "", "[UNITY_RESULT]|识别失败|无", false);
             yield break;
         }
 
@@ -92,11 +92,12 @@ public class AudioAnalyzer : MonoBehaviour
             string keywords = string.Join("、", analysisResult.keywordTags);
             string combinedTags = GenerateCombinedTags(sentimentResult, keywords);
             
-            InvokeCallback(sentimentResult, keywords, combinedTags);
+            // 完整流程成功，返回处理成功
+            InvokeCallback(sentimentResult, keywords, combinedTags, true);
         }
         else
         {
-            InvokeCallback("文本分析失败", "", "文本分析失败，无法生成标签");
+            InvokeCallback("文本分析失败", "", "文本分析失败，无法生成标签", false);
         }
     }
 
@@ -105,15 +106,15 @@ public class AudioAnalyzer : MonoBehaviour
     /// </summary>
     private string GenerateCombinedTags(string sentiment, string keywords)
     {
-        return $"情绪标签：{sentiment} | 关键词标签：{keywords}";
+        return $"{sentiment}  {keywords}";
     }
 
     /// <summary>
-    /// 调用回调函数
+    /// 调用回调函数（带处理成功标识）
     /// </summary>
-    private void InvokeCallback(string sentiment, string keywords, string combined)
+    private void InvokeCallback(string sentiment, string keywords, string combined, bool isSuccess)
     {
-        onAnalysisCompleted?.Invoke(sentiment, keywords, combined);
+        onAnalysisCompleted?.Invoke(sentiment, keywords, combined, isSuccess);
         onAnalysisCompleted = null; // 清空回调避免重复调用
     }
 
@@ -292,47 +293,132 @@ public class AudioAnalyzer : MonoBehaviour
     }
 
     /// <summary>
-    /// 提取关键词
+    /// 提取关键词（严格适配百度接口规范）
     /// </summary>
-    private IEnumerator ExtractKeywords(string text, string accessToken, Action<KeywordResult> onComplete)
+    private IEnumerator ExtractKeywords(string text, string accessToken, Action<KeywordResult> onComplete, int num = 3)
     {
-        string url = $"https://aip.baidubce.com/rpc/2.0/nlp/v1/keyword?access_token={accessToken}";
+        // 1. 接口URL（拼接access_token和编码参数）
+        string url = $"https://aip.baidubce.com/rpc/2.0/nlp/v1/txt_keywords_extraction?access_token={accessToken}&charset=UTF-8";
+        Debug.Log("待提取关键词文本:" + text);
 
-        string limitedText = text.Length > 2000 ? text.Substring(0, 2000) : text;
-        string title = text.Length > 20 ? text.Substring(0, 20) : text;
-        
-        var data = new KeywordRequestData { content = limitedText, title = title };
-        string jsonData = JsonUtility.ToJson(data);
+        // 2. 构建请求体（严格匹配接口的text数组和num字段）
+        var requestData = new BaiduKeywordRequestData
+        {
+            text = new string[] { text }, // 接口要求text为数组类型
+            num = num                     // 可选：关键词数量，默认5个
+        };
+        string jsonData = JsonUtility.ToJson(requestData);
+        Debug.Log("请求体JSON:" + jsonData);
 
-        UnityWebRequest request = UnityWebRequest.PostWwwForm(url, "POST");
+        // 3. 构建POST请求
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
 
+        // 4. 设置请求头
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Accept", "application/json");
+
+        // 5. 发送请求并等待响应
         yield return request.SendWebRequest();
 
+        // 6. 处理响应结果
         if (request.result == UnityWebRequest.Result.Success)
         {
+            Debug.Log("关键词提取接口调用成功，响应内容:" + request.downloadHandler.text);
             try
             {
-                var result = JsonUtility.FromJson<KeywordResult>(request.downloadHandler.text);
-                onComplete?.Invoke(result);
+                // 解析响应（完全匹配百度返回格式）
+                var result = JsonUtility.FromJson<BaiduKeywordResult>(request.downloadHandler.text);
+                if (result != null && result.results != null && result.results.Length > 0)
+                {
+                    onComplete?.Invoke(new KeywordResult
+                    {
+                        log_id = result.log_id,
+                        items = System.Array.ConvertAll(result.results, item => new KeywordItem
+                        {
+                            tag = item.word,
+                            score = item.score
+                        })
+                    });
+                }
+                else
+                {
+                    Debug.LogError("关键词提取结果为空或格式异常");
+                    onComplete?.Invoke(null);
+                }
             }
-            catch
+            catch (System.Exception e)
             {
+                Debug.LogError("关键词结果解析失败:" + e.Message + "，响应内容:" + request.downloadHandler.text);
                 onComplete?.Invoke(null);
             }
         }
         else
         {
+            Debug.LogError($"关键词提取接口调用失败！错误码:{request.result}，错误信息:{request.error}");
+            Debug.LogError($"服务器返回内容:{request.downloadHandler.text}");
             onComplete?.Invoke(null);
         }
 
+        // 7. 释放资源
         request.Dispose();
     }
 
-    // 数据模型类
+    #region 百度接口数据模型（完全匹配官方返回）
+    /// <summary>
+    /// 百度关键词提取请求体
+    /// </summary>
+    [Serializable]
+    private class BaiduKeywordRequestData
+    {
+        public string[] text; // 必选：原文本内容（数组格式）
+        public int num;       // 可选：需要提取的关键词数量最大值
+    }
+
+    /// <summary>
+    /// 百度关键词提取原始响应
+    /// </summary>
+    [Serializable]
+    private class BaiduKeywordResult
+    {
+        public long log_id;          // 请求唯一标识码
+        public KeywordRawItem[] results; // 关键词提取结果数组
+    }
+
+    /// <summary>
+    /// 百度关键词原始项（word和score字段）
+    /// </summary>
+    [Serializable]
+    private class KeywordRawItem
+    {
+        public float score; // 关键词置信度
+        public string word; // 提取出的关键词
+    }
+
+    /// <summary>
+    /// 对外暴露的关键词结果（保持原有结构，便于兼容）
+    /// </summary>
+    [Serializable]
+    public class KeywordResult
+    {
+        public long log_id;        // 请求唯一标识码
+        public KeywordItem[] items; // 关键词结果数组
+    }
+
+    /// <summary>
+    /// 对外暴露的关键词项
+    /// </summary>
+    [Serializable]
+    public class KeywordItem
+    {
+        public string tag;   // 提取出的关键词（与原word字段映射）
+        public float score;  // 关键词置信度
+    }
+    #endregion
+
+    // 以下是原有其他数据模型（保持不变）
     [Serializable]
     private class SiliconFlowResponse { public string text; }
 
@@ -347,15 +433,6 @@ public class AudioAnalyzer : MonoBehaviour
 
     [Serializable]
     private class SentimentItem { public int sentiment; }
-
-    [Serializable]
-    private class KeywordRequestData { public string content; public string title; }
-
-    [Serializable]
-    private class KeywordResult { public KeywordItem[] items; }
-
-    [Serializable]
-    private class KeywordItem { public string tag; }
 
     [Serializable]
     private class AnalysisResult

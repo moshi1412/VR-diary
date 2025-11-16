@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2938436440021545084}
   - component: {fileID: 2805532560081250780}
   - component: {fileID: 5933844604466861533}
+  - component: {fileID: 3240356973356858417}
   - component: {fileID: 137811358607763489}
   m_Layer: 0
   m_Name: ball
@@ -52,7 +53,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: 7358e191-33b7-43ca-b066-b2f00531ac66
-  instanceId: aa27df46-70a3-4e8e-9272-d6ec82a3ba74
+  instanceId: f26fbb83-f391-42f3-98a3-34ac821d67d9
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: 
@@ -122,7 +123,7 @@ Rigidbody:
   m_GameObject: {fileID: 868621841027356931}
   serializedVersion: 5
   m_Mass: 100
-  m_LinearDamping: 0
+  m_LinearDamping: 0.15
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -183,6 +184,34 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.49999997
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3240356973356858417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 868621841027356931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d2766a43a0c195479d25e103ffb70e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FallDown
+  currentMode: 0
+  stopOnModeChange: 1
+  triggerHeight: 12
+  horizontalCenter: {x: 20, y: 30}
+  horizontalRange: {x: 40, y: 20}
+  upwardRange: 12
+  moveSpeed: 1.5
+  stopAfterReach: 0
+  fallTargetPosition: {x: 15.74, y: -10.04, z: 20.87}
+  fallSmoothTime: 0.5
+  fallMaxSpeed: 8.36
+  autoSwitchToIdleAfterFall: 1
+  pos: {fileID: 2100000, guid: 5f49b6c64fbba8245b8afe1d30997c98, type: 2}
+  neu: {fileID: 2100000, guid: 28b87d5146c76ed4bb033b6363000ca9, type: 2}
+  neg: {fileID: 2100000, guid: f649dfb2218df164f97970ef4871bd6c, type: 2}
+  isAboveTriggerHeight: 0
 --- !u!114 &137811358607763489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +224,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17b5ff8e2842577469563ebb08d0a283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  memoryId: 0
+  picturepath: 
+  recordingpath: 
+  createTime: 
+  label: 
+  color: 0
+  videopath: 
 --- !u!1 &7490226173431309147
 GameObject:
   m_ObjectHideFlags: 0
@@ -242,7 +278,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: f8766c17-aaf8-4b55-9431-de8deea83842
-  instanceId: 5e948c4a-f455-4325-b306-58cbdfe27458
+  instanceId: 50b57e5b-4c96-452e-b3c7-4e7fbbccd60c
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: f8338144-8280-4ff6-9455-ae2bb9c20fe8

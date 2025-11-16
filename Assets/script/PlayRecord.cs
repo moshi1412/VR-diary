@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class PlayRecord : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class PlayRecord : MonoBehaviour
     [SerializeField] private string playingText = "Playing...";
     [SerializeField] private string pausedText = "Stopped";
     [SerializeField] private string errorText = "Recording Not Found";
-    // [SerializeField] private string recordOverText = "Record is over"; // 新增：播放结束文本
+    [SerializeField] private string recordOverText = "Record is over"; // 播放结束文本
 
     private void Start()
     {
@@ -40,7 +41,7 @@ public class PlayRecord : MonoBehaviour
             dataManager = GameObject.FindWithTag("DataManager")?.GetComponent<DataManager>();
             if (dataManager == null)
             {
-                dataManager = FindObjectOfType<DataManager>();
+                dataManager = FindAnyObjectByType<DataManager>();
             }
         }
 
@@ -88,6 +89,7 @@ public class PlayRecord : MonoBehaviour
     // 从BallOnProcess的结构体属性中获取录音路径并播放
     private void FetchPathFromBallOnProcessAndPlay()
     {
+        Debug.Log("Fetch audio");
         // 检查BallOnProcess是否存在
         if (dataManager.BallOnProcess == null)
         {
@@ -95,7 +97,7 @@ public class PlayRecord : MonoBehaviour
             return;
         }
 
-        // 获取BallOnProcess上存储结构体的组件（根据实际组件名修改）
+        // 获取BallOnProcess上存储结构体的组件
         BallMemory ballMemory = dataManager.BallOnProcess.GetComponent<BallMemory>();
         if (ballMemory == null)
         {
@@ -121,25 +123,43 @@ public class PlayRecord : MonoBehaviour
 
         // 路径有效，加载并播放音频
         targetRecordingPath = recordingPath;
+        Debug.Log(recordingPath);
         StartCoroutine(LoadAndPlayAudio(targetRecordingPath));
     }
 
-    // 加载并播放音频
+    // 加载并播放音频（优化版：自动识别格式+跨平台路径）
     private IEnumerator LoadAndPlayAudio(string path)
     {
-        using (UnityEngine.Networking.UnityWebRequest www = UnityEngine.Networking.UnityWebRequestMultimedia.GetAudioClip(
-            "file://" + path, 
-            UnityEngine.AudioType.WAV // 根据实际音频格式修改
-        ))
+        // 自动识别音频格式（只保留普遍支持的格式）
+        AudioType audioType = GetAudioTypeFromPath(path);
+        if (audioType == AudioType.UNKNOWN)
         {
+            HandleErrorState($"不支持的音频格式：{Path.GetExtension(path)}");
+            yield break;
+        }
+
+        // 构建跨平台有效URL
+        string url = GetValidUrl(path);
+
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, audioType))
+        {
+            www.timeout = 5; // 5秒超时
             yield return www.SendWebRequest();
 
-            if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+            if (www.result == UnityWebRequest.Result.Success)
             {
-                audioSource.clip = UnityEngine.Networking.DownloadHandlerAudioClip.GetContent(www);
-                isAudioLoaded = true;
-                PlayAudio();
-                Debug.Log("Loaded and playing recording from: " + path);
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
+                if (clip != null)
+                {
+                    audioSource.clip = clip;
+                    isAudioLoaded = true;
+                    PlayAudio();
+                    Debug.Log("Loaded and playing recording from: " + path);
+                }
+                else
+                {
+                    HandleErrorState("音频解析失败，可能编码不支持");
+                }
             }
             else
             {
@@ -184,14 +204,38 @@ public class PlayRecord : MonoBehaviour
         playToggle.interactable = false;
         statusText.text = errorText;
     }
-     private void Update()
+
+    // 检测播放结束状态
+    private void Update()
     {
         // 当音频加载完成、不在播放中，且Toggle是勾选状态（说明是播放完毕而非手动暂停）
-        if (isAudioLoaded && !audioSource.isPlaying )
+        if (playToggle.isOn && isAudioLoaded && !audioSource.isPlaying)
         {
-            
-            statusText.text = pausedText; // 显示“Record is over”
+            statusText.text = recordOverText;
         }
     }
-    
+
+    // 辅助方法：根据文件后缀自动识别AudioType（只保留所有Unity版本都支持的格式）
+    private AudioType GetAudioTypeFromPath(string path)
+    {
+        string extension = Path.GetExtension(path).ToLower();
+        return extension switch
+        {
+            ".wav" => AudioType.WAV,   // 所有版本均支持
+            ".mp3" => AudioType.MPEG,  // 所有版本均支持（MP3的标准枚举值）
+            ".ogg" => AudioType.OGGVORBIS, // 多数版本支持
+            _ => AudioType.UNKNOWN     // 不支持的格式
+        };
+    }
+
+    // 辅助方法：构建跨平台有效URL
+    private string GetValidUrl(string localPath)
+    {
+        string formattedPath = localPath.Replace("\\", "/");
+#if UNITY_STANDALONE_WIN
+        return "file:///" + formattedPath; // Windows系统路径格式
+#else
+        return "file://" + formattedPath;  // macOS/Linux系统路径格式
+#endif
+    }
 }

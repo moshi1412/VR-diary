@@ -19,6 +19,8 @@ TagManager:
   - PanelGroup
   - DataManager
   - BallBase
+  - BallList
+  - TeleportZone
   layers:
   - Default
   - TransparentFX

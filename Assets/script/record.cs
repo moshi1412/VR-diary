@@ -147,14 +147,14 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
     {
         if (dataManager == null)
         {
-            Debug.LogError("DataManager is null, cannot save path!");
+            Debug.LogWarning("DataManager is null, cannot save path!");
             return;
         }
 
         // 检查ballonprocess是否存在
         if (dataManager.BallOnProcess == null)
         {
-            Debug.LogError("DataManager.ballonprocess is null, cannot save path!");
+            Debug.LogWarning("DataManager.ballonprocess is null, cannot save path!");
             return;
         }
 
@@ -162,7 +162,7 @@ public class TMP_ToggleAudioRecorder : MonoBehaviour
         BallMemory ballMemory = dataManager.BallOnProcess.GetComponent<BallMemory>();
         if (ballMemory == null)
         {
-            Debug.LogError("ballmemory component not found on ballonprocess!");
+            Debug.LogWarning("ballmemory component not found on ballonprocess!");
             return;
         }
         BallMemory.MemoryData tempData =new BallMemory.MemoryData();
