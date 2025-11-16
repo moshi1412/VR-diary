@@ -36,7 +36,7 @@ public class BallMemory : MonoBehaviour
         public string videopath;
     }
 
-    private void Start()
+    private void Awake()
     {
         // 在Start中初始化可空结构体，将面板编辑的值赋值给BallData
         BallData = new MemoryData
@@ -58,7 +58,9 @@ public class BallMemory : MonoBehaviour
     }
     public void DataUpdate(MemoryData? MData)
     {
+        Debug.Log(MData.Value.picturepath);
         BallData=MData;
+        Debug.Log(BallData.Value.picturepath);
         
     }
 }

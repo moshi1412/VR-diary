@@ -53,11 +53,12 @@ public class BallSceneSwitcher : MonoBehaviour
         if (database != null && database.BallOnProcess != null)
         {
             BallMemory ballMemory = database.BallOnProcess.GetComponent<BallMemory>();
+            // Debug.Log(ballMemory!=null);
             
             if (ballMemory != null && ballMemory.BallData.HasValue)
             {
                 string skyboxPath = ballMemory.BallData.Value.picturepath;
-                
+                Debug.Log(ballMemory.BallData.Value);
                 if (!string.IsNullOrEmpty(skyboxPath))
                 {
                     SkyboxSceneData.Instance.targetPicturePath = skyboxPath;

@@ -34,7 +34,7 @@ public class DataManager : MonoBehaviour
 
         List<BallMemory.MemoryData?> allData = LoadAllDataFromFile();
         int newId = GenerateUniqueId(allData);
-
+        BallOnProcess.name="Ball"+newId.ToString();
         BallMemory.MemoryData tempData = newData.Value;
         tempData.memoryId = newId;
         if (string.IsNullOrEmpty(tempData.createTime))

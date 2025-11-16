@@ -34,7 +34,7 @@ public class BallOperation : MonoBehaviour
         //hasTriggered = true;
         if(MData.HasValue)
         {
-            // Debug.Log("videopath:"+MData.Value.videopath);
+            Debug.Log("picture:"+MData.Value.picturepath);
             newBall.GetComponent<BallMemory>().DataUpdate(MData);
             newBall.name="Ball"+MData.Value.memoryId.ToString();
         }
