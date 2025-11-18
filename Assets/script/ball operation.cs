@@ -14,7 +14,7 @@ public class BallOperation : MonoBehaviour
     private void Start()
     {
             spawnPosition=prefabToSpawn.transform;
-            spawnPosition.position = new Vector3(15.7399998f,-10.04f,20.8700008f);
+            spawnPosition.position = new Vector3(13.487f, -8.43f, 10.757f);
             BallListObject=GameObject.FindWithTag("BallList");
 
     }
