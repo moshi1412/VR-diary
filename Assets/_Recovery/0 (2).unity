@@ -1410,11 +1410,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2488067952423042193, guid: 90ae27b2ef005bc479d956c3d244f591, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2488067952423042193, guid: 90ae27b2ef005bc479d956c3d244f591, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2488067952423042193, guid: 90ae27b2ef005bc479d956c3d244f591, type: 3}
       propertyPath: m_LocalScale.x
@@ -1434,11 +1434,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2488067952423042193, guid: 90ae27b2ef005bc479d956c3d244f591, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2488067952423042193, guid: 90ae27b2ef005bc479d956c3d244f591, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -22
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2746608227343325639, guid: 90ae27b2ef005bc479d956c3d244f591, type: 3}
       propertyPath: m_Layer
@@ -13617,15 +13617,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6026a86e9bbb9df46a0dff030f48d512, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayRecord
-  playToggle: {fileID: 0}
-  statusText: {fileID: 0}
-  dataManager: {fileID: 0}
-  defaultText: Play Recording
-  loadingText: Loading...
-  playingText: Playing...
-  pausedText: Stopped
-  errorText: Recording Not Found
-  recordOverText: Record is over
 --- !u!1001 &2037017917
 PrefabInstance:
   m_ObjectHideFlags: 0
