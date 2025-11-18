@@ -8,6 +8,9 @@ public class BallOperation : MonoBehaviour
     // 生成物体的位置（可选，默认使用当前物体位置）
     private Transform spawnPosition;
     private GameObject BallListObject;
+    public Material pos;
+    public Material neu;
+    public Material neg;
     // 标记是否已触发
     //public bool hasTriggered = false;
     //public bool BallReachButtom=false;
@@ -37,6 +40,47 @@ public class BallOperation : MonoBehaviour
             Debug.Log("picture:"+MData.Value.picturepath);
             newBall.GetComponent<BallMemory>().DataUpdate(MData);
             newBall.name="Ball"+MData.Value.memoryId.ToString();
+            int colorValue = MData.Value.color;
+            Renderer ballRenderer=newBall.GetComponent<Renderer>();
+            switch (colorValue)
+            {
+                case 1:
+                    if (pos != null)
+                    {
+                        ballRenderer.material = pos;
+                        Debug.Log("材质已切换为：pos（对应color=1）");
+                    }
+                    else
+                    {
+                        Debug.LogError("pos材质未赋值，无法切换");
+                    }
+                    break;
+                case 0:
+                    if (neu != null)
+                    {
+                        ballRenderer.material = neu;
+                        Debug.Log("材质已切换为：neu（对应color=0）");
+                    }
+                    else
+                    {
+                        Debug.LogError("neu材质未赋值，无法切换");
+                    }
+                    break;
+                case -1:
+                    if (neg != null)
+                    {
+                        ballRenderer.material = neg;
+                        Debug.Log("材质已切换为：neg（对应color=-1）");
+                    }
+                    else
+                    {
+                        Debug.LogError("neg材质未赋值，无法切换");
+                    }
+                    break;
+                default:
+                    Debug.LogError($"无效的color值：{colorValue}，材质未切换");
+                    break;
+            }
         }
     }
 

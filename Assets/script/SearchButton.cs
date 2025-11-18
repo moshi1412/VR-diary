@@ -16,27 +16,27 @@ public class SearchButton : MonoBehaviour
         if (!IsTriggered)
         {
             MainPanelMovein();
-            IsTriggered = false;
+            IsTriggered = true;
         }
         else
         {
             MainPanelMoveout();
-            IsTriggered = true;
+            IsTriggered = false;
         }
     }
     public void MainPanelMoveout()
     {
         //if (other.CompareTag("Ball"))
         //{
-            UIpanelgroup.SetBool("searchin",true);
-            UIpanelgroup.SetBool("searchout",false);
+            UIpanelgroup.SetBool("searchout",true);
+            UIpanelgroup.SetBool("searchin",false);
         //}
     }
     public void MainPanelMovein()
     {
         //if (other.CompareTag("Ball"))
-            UIpanelgroup.SetBool("searchout",true);
-            UIpanelgroup.SetBool("searchin",false);
+            UIpanelgroup.SetBool("searchin",true);
+            UIpanelgroup.SetBool("searchout",false);
     }
     
 }
