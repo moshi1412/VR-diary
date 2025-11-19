@@ -126,7 +126,7 @@ public class AudioAnalyzer : MonoBehaviour
         string url = "https://api.siliconflow.cn/v1/audio/transcriptions";
 
         WWWForm form = new WWWForm();
-        form.AddField("model", "FunAudioLLM/SenseVoiceSmall");
+        form.AddField("model", "TeleAI/TeleSpeechASR");
 
         byte[] audioData;
         try

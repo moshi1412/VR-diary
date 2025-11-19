@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro; // 引入TextMeshPro命名空间
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System;
 
 [RequireComponent(typeof(Toggle))]
@@ -29,9 +30,9 @@ public class AudioVisualizerWithSave : MonoBehaviour
     public float maxBarHeight = 100f;
     public float barSmoothness = 20f;
     [Range(0f, 0.3f)] public float barRandomness = 0.15f;
-    
+
     [Header("=== 按钮 ===")]
-    public LabelSearchHandler ConfirmButton; 
+    public LabelSearchHandler ConfirmButton;
 
     // 状态文本内容常量
     private const string DEFAULT_TEXT = "Press to Speak";
@@ -44,8 +45,8 @@ public class AudioVisualizerWithSave : MonoBehaviour
     private List<Image> allAudioBars = new List<Image>();
     private float[] barTargetHeights;
     private float currentRingScale;
-    private AudioAnalyzer aa; 
-    
+    private AudioAnalyzer aa;
+
     void Start()
     {
         // 初始化Toggle
@@ -85,8 +86,8 @@ public class AudioVisualizerWithSave : MonoBehaviour
         else
         {
             // 同步原有录音类的麦克风设备
-            microphoneName = audioRecorder.GetComponent<AudioSource>() != null 
-                ? Microphone.devices.Length > 0 ? Microphone.devices[0] : "" 
+            microphoneName = audioRecorder.GetComponent<AudioSource>() != null
+                ? Microphone.devices.Length > 0 ? Microphone.devices[0] : ""
                 : "";
         }
     }
@@ -157,7 +158,7 @@ public class AudioVisualizerWithSave : MonoBehaviour
 
             Debug.Log("STT");
             StartCoroutine(aa.AudioToText(
-                afpath, 
+                afpath,
                 (result) => ReceiveAnalysisText(result)
             ));
         }
@@ -165,18 +166,74 @@ public class AudioVisualizerWithSave : MonoBehaviour
 
     private void ReceiveAnalysisText(string p1)
     {
-        Debug.Log($"label1: {p1}");
-        ConfirmButton.LabelBySpeak = p1;
-        statusText.text=p1;
+        // 1. 清理文本：去除emoji，标点替换为空格
+        string cleanedText = CleanRecognitionText(p1);
+
+        // 2. 使用清理后的文本进行后续操作
+        Debug.Log($"label1: {cleanedText}");
+        ConfirmButton.LabelBySpeak = cleanedText;
+        statusText.text = cleanedText;
+    }
+    private string CleanRecognitionText(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+        foreach (char c in text)
+        {
+            // 1. 判断是否为emoji（通过Unicode区块范围排除）
+            if (IsEmoji(c))
+                continue; // 跳过emoji
+
+            // 2. 判断是否为标点（替换为空格）
+            if (IsPunctuation(c))
+            {
+                sb.Append(' '); // 标点替换为空格
+            }
+            else
+            {
+                sb.Append(c); // 保留其他有效字符
+            }
+        }
+
+        // 3. 合并连续空格并去除首尾空格
+        string result = sb.ToString();
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\s+", " ").Trim();
+        return result;
     }
 
+    // 判断是否为emoji（覆盖常见emoji的Unicode范围）
+    private bool IsEmoji(char c)
+    {
+        // emoji主要分布在以下Unicode区块，不在这些范围的字符视为非emoji
+        return (c >= 0x1F600 && c <= 0x1F64F) || // 表情符号
+            (c >= 0x1F300 && c <= 0x1F5FF) || // 符号与图案
+            (c >= 0x1F680 && c <= 0x1F6FF) || // 交通与地图符号
+            (c >= 0x1F1E0 && c <= 0x1F1FF) || // 国旗表情
+            (c >= 0x2600 && c <= 0x26FF) ||   // 杂项符号
+            (c >= 0x2700 && c <= 0x27BF);     // 装饰符号
+    }
+
+    // 判断是否为标点（中英文标点）
+    private bool IsPunctuation(char c)
+    {
+        // 中文标点
+        string chinesePunct = "。！？，；：“”‘’（）【】《》、…—";
+        // 英文标点（来自ASCII表）
+        bool isEnglishPunct = (c >= 33 && c <= 47) || (c >= 58 && c <= 64) ||
+                              (c >= 91 && c <= 96) || (c >= 123 && c <= 126);
+
+        return isEnglishPunct || chinesePunct.Contains(c.ToString());
+    }
     // 获取音量（基于原有录音类的AudioClip）
     private float GetVolumeLevel()
     {
         if (audioRecorder == null || !isRecording) return 0f;
 
         // 从原有录音类获取当前录音片段
-        recordingClip = audioRecorder.GetType().GetField("recordedClip", 
+        recordingClip = audioRecorder.GetType().GetField("recordedClip",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             ?.GetValue(audioRecorder) as AudioClip;
 

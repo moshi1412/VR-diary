@@ -93,6 +93,7 @@ public class RandomMemoryLoader : MonoBehaviour
     private void LoadMemoryToContainer(BallMemory.MemoryData data, Transform container)
     {
         // 处理图片路径（与之前一致）
+        Debug.Log(data.picturepath);
         string dirPath = Path.GetDirectoryName(data.picturepath);
         string fileName = Path.GetFileNameWithoutExtension(data.picturepath);
         string extension = Path.GetExtension(data.picturepath);

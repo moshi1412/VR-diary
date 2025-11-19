@@ -15,12 +15,12 @@ public class SearchButton : MonoBehaviour
         Debug.Log("the player has touched the search button!");
         if (!IsTriggered)
         {
-            MainPanelMovein();
+            MainPanelMoveout();
             IsTriggered = true;
         }
         else
         {
-            MainPanelMoveout();
+            MainPanelMovein();
             IsTriggered = false;
         }
     }
